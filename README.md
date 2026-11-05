@@ -38,7 +38,7 @@ npm run dev        # http://localhost:4321
 Panel local (solo en desarrollo):
 
 ```bash
-npm run admin      # abre http://localhost:4321/admin
+npm run admin      # abre el navegador; entra a http://localhost:4321/admin
 ```
 
 Build de producción y vista previa:

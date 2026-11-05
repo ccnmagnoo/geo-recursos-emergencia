@@ -29,7 +29,7 @@ de operar por una sola persona bajo presión.
 | Comando                         | Qué hace                                                 |
 | ------------------------------- | -------------------------------------------------------- |
 | `npm run dev`                   | Servidor de desarrollo en http://localhost:4321          |
-| `npm run admin`                 | Desarrollo y abre `/admin` (solo existe en dev)          |
+| `npm run admin`                 | Desarrollo y abre el navegador; entra a `/admin`         |
 | `npm run validate`              | Valida todo `/content` y devuelve `archivo:línea`        |
 | `npm run validate -- --changed` | Igual, pero muestra solo los archivos que estás editando |
 | `npm run check`                 | `astro check` (TypeScript + plantillas)                  |

@@ -144,18 +144,9 @@ export const zonasGeo = contenido.zonasGeo
 
 export const recursosPorId = new Map(recursos.map((recurso) => [recurso.id, recurso]));
 
-/** Tipos que realmente aparecen en el sitio, para leyenda y filtros. */
-export const tiposVisibles: TipoRecursoT[] = tipos
-  .filter((tipo) => recursos.some((recurso) => recurso.tipo === tipo.id))
-  .sort((a, b) => a.orden - b.orden);
-
 export const zonasVisibles = zonas.filter((zona) =>
   [...recursos, ...requerimientos, ...zonasGeo].some((elemento) => elemento.zona === zona.id),
 );
-
-export function derivadosDe(recurso: RecursoT): TrasladosDerivados {
-  return derivarUbicaciones(recurso);
-}
 
 /** Tipo de un recurso ya validado. Falla fuerte si el catálogo cambió sin migrar. */
 export function tipoDe(recurso: RecursoT): TipoRecursoT {
