@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import { recursos, site, tipoDe, zonas } from '../lib/content';
+import { alertasVigentesDe, etiquetaEstado, ultimaActualizacion } from '../lib/recurso';
+import { formatearAbsoluta } from '../lib/tiempo';
+
+const zonaNombre = (id: string | undefined): string =>
+  id === undefined ? '—' : (zonas.find((zona) => zona.id === id)?.nombre ?? '—');
+
+const filas = recursos.map((recurso) => ({
+  recurso,
+  tipo: tipoDe(recurso),
+  actualizado: ultimaActualizacion(recurso),
+  criticas: alertasVigentesDe(recurso).filter((alerta) => alerta.severidad === 'critica'),
+}));
+---
+
+<Base titulo="Versión imprimible" descripcion="Lista de recursos para imprimir o guardar en PDF.">
+  <div class="envoltorio" style="padding-block:1rem">
+    <h1>Recursos de emergencia — versión imprimible</h1>
+    <p>
+      {site.institucion} · {site.contacto}
+    </p>
+    <p>
+      Publicado:{' '}
+      <time datetime={new Date().toISOString()}>{formatearAbsoluta(new Date().toISOString())}</time>
+    </p>
+    <p>
+      Teléfonos de emergencia:
+      {site.emergencias
+        .map((emergencia) => ` ${emergencia.nombre} ${emergencia.telefono}`)
+        .join(' · ')}
+    </p>
+
+    <div class="tabla-envoltorio" style="margin-top:1rem">
+      <table>
+        <caption>
+          {filas.length}recursos. Cada fila incluye coordenadas para dictarlas por teléfono.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Recurso</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Ubicación</th>
+            <th scope="col">Zona</th>
+            <th scope="col">Coordenadas</th>
+            <th scope="col">Actualizado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map(({ recurso, tipo, actualizado, criticas }) => (
+            <tr>
+              <th scope="row">
+                {recurso.nombre}
+                <div>
+                  <small>{recurso.id}</small>
+                </div>
+                {criticas.length > 0 && (
+                  <div>
+                    <strong>
+                      Alerta crítica: {criticas.map((alerta) => alerta.texto).join(' / ')}
+                    </strong>
+                  </div>
+                )}
+              </th>
+              <td>{tipo.etiqueta}</td>
+              <td>{etiquetaEstado(recurso.estado_actual)}</td>
+              <td>{recurso.ubicacion_actual.nombre}</td>
+              <td>{zonaNombre(recurso.zona)}</td>
+              <td>
+                {recurso.ubicacion_actual.lat.toFixed(5)}, {recurso.ubicacion_actual.lng.toFixed(5)}
+              </td>
+              <td>{formatearAbsoluta(actualizado)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:1rem">
+      Los datos pueden cambiar. Antes de desplazarte, confirma con el número de emergencias o revisa
+      la versión en línea.
+    </p>
+  </div>
+</Base>

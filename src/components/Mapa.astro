@@ -1,0 +1,214 @@
+---
+import type { RecursoVista } from '../lib/vista';
+import type { SiteT, TipoRecursoT, ZonaT, ZonaGeoT } from '../lib/schema';
+import { conBase } from '../lib/rutas';
+import { atribucionTeselas } from '../lib/url';
+import MuestraTipo from './MuestraTipo.astro';
+
+interface Props {
+  recursos: RecursoVista[];
+  tipos: TipoRecursoT[];
+  zonas: ZonaT[];
+  zonasGeo: ZonaGeoT[];
+  site: SiteT;
+}
+
+const { recursos, tipos, zonas, zonasGeo, site } = Astro.props;
+
+/** Solo se ofrecen filtros de tipos que tienen al menos un recurso publicado. */
+const tiposConRecursos = tipos
+  .filter((tipo) => recursos.some((recurso) => recurso.tipo.id === tipo.id))
+  .sort((a, b) => a.orden - b.orden);
+
+const zonasGeoVista = zonasGeo
+  .map((zona) => {
+    const tipo = tipos.find((candidato) => candidato.id === zona.tipo);
+    if (tipo === undefined) return null;
+    return {
+      id: zona.id,
+      nombre: zona.nombre,
+      tipo: tipo.id,
+      etiqueta: tipo.etiqueta,
+      color: tipo.color,
+      geometria: {
+        tipo: zona.geometria.tipo,
+        coordenadas: zona.geometria.coordenadas,
+      },
+      detalles: Object.entries(zona.detalles).map(([clave, valor]) => ({ clave, valor })),
+    };
+  })
+  .filter((zona): zona is NonNullable<typeof zona> => zona !== null);
+
+const datos = {
+  centro: { lat: site.mapa.centro_lat, lng: site.mapa.centro_lng, zoom: site.mapa.zoom },
+  teselas: {
+    url: site.teselas.url,
+    atribucion: atribucionTeselas(site.teselas.atribucion, site.teselas.atribucion_url),
+    maxZoom: site.teselas.max_zoom,
+  },
+  umbralHoras: site.umbral_desactualizado_horas,
+  recursos,
+  zonasGeo: zonasGeoVista,
+};
+
+/** Evita cerrar el <script> si un texto contiene "</script>". */
+const json = JSON.stringify(datos).replaceAll('<', '\\u003c');
+
+const estados = [
+  { valor: 'operativo', texto: 'Funcionando' },
+  { valor: 'con_falla', texto: 'Con falla' },
+  { valor: 'fuera_de_servicio', texto: 'Fuera de servicio' },
+  { valor: 'en_traslado', texto: 'En traslado' },
+  { valor: 'planificado', texto: 'Planificado' },
+  { valor: 'retirado', texto: 'Retirado' },
+];
+---
+
+<section class="mapa-pagina" aria-labelledby="titulo-mapa">
+  <h2 class="solo-lector" id="titulo-mapa">
+    Mapa de recursos de emergencia
+  </h2>
+
+  <div class="mapa-barra">
+    <div
+      class="envoltorio"
+      style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;width:100%"
+    >
+      <button
+        type="button"
+        class="boton boton--secundario"
+        id="alternar-filtros"
+        aria-expanded="false"
+        aria-controls="panel-filtros"
+      >
+        Filtros
+      </button>
+      <a class="boton boton--secundario" href={conBase('/lista')}>
+        Ver como lista
+      </a>
+      <p class="mapa-barra__resultado" role="status" aria-live="polite" id="resultado-mapa">
+        {recursos.length} recursos
+      </p>
+    </div>
+  </div>
+
+  <div class="envoltorio" style="width:100%;padding-block:.75rem">
+    <div id="panel-filtros" class="panel-filtros" hidden>
+      <div class="campo">
+        <label for="busqueda">Buscar por nombre, tipo o sector</label>
+        <input
+          type="search"
+          id="busqueda"
+          name="busqueda"
+          autocomplete="off"
+          placeholder="Ej: agua, albergue, Las Palmas"
+        />
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.75rem">
+        <div class="campo">
+          <label for="filtro-estado">Estado</label>
+          <select id="filtro-estado" name="estado">
+            <option value="">Todos los estados</option>
+            {estados.map((estado) => (
+              <option value={estado.valor}>{estado.texto}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="filtro-zona">Zona</label>
+          <select id="filtro-zona" name="zona">
+            <option value="">Todas las zonas</option>
+            {zonas.map((zona) => (
+              <option value={zona.id}>
+                {zona.comuna ? `${zona.nombre} (${zona.comuna})` : zona.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div class="panel-filtros__grupo">
+        <h2>Tipo de recurso</h2>
+        <fieldset>
+          <legend class="solo-lector">Filtrar por tipo de recurso</legend>
+          {tiposConRecursos.map((tipo) => (
+            <label class="check">
+              <input type="checkbox" name="tipo" value={tipo.id} checked />
+              <MuestraTipo tipo={tipo} tamano="pequeno" />
+              <span>{tipo.etiqueta}</span>
+            </label>
+          ))}
+        </fieldset>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:1rem">
+        <label class="check">
+          <input type="checkbox" id="mostrar-traslados" checked />
+          <span>Mostrar traslados</span>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="mostrar-zonas" checked />
+          <span>Mostrar zonas y cortes</span>
+        </label>
+        <button type="button" class="boton boton--secundario" id="limpiar-filtros">
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="mapa"
+    class="mapa"
+    data-datos="datos-mapa"
+    role="region"
+    aria-label="Mapa interactivo de recursos. Si no puedes usar el mapa, abre la lista de recursos."
+  ></div>
+
+  <noscript>
+    <div class="envoltorio" style="padding-block:1rem">
+      <p class="aviso aviso--info">
+        El mapa necesita JavaScript. La <a href={conBase('/lista')}>lista de recursos</a> funciona
+        sin conexión y sin JavaScript.
+      </p>
+    </div>
+  </noscript>
+
+  <div class="envoltorio" style="padding-block:1rem">
+    <details>
+      <summary>Leyenda de tipos</summary>
+      <ul style="list-style:none;padding:0;margin:.75rem 0 0;display:flex;flex-wrap:wrap;gap:.75rem">
+        {tiposConRecursos.map((tipo) => (
+          <li style="display:flex;align-items:center;gap:.4rem">
+            <MuestraTipo tipo={tipo} tamano="pequeno" />
+            <span>{tipo.etiqueta}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="frescura" style="margin-top:.75rem">
+        Cada tipo tiene forma, color y símbolo distintos: el color no es la única señal.
+      </p>
+    </details>
+  </div>
+
+  <dialog class="ficha" id="ficha-mapa" aria-labelledby="ficha-mapa-titulo">
+    <div class="ficha__barra">
+      <h2 id="ficha-mapa-titulo" style="margin:0;font-size:1.05rem">
+        Ficha del recurso
+      </h2>
+      <button type="button" class="boton boton--icono" data-cerrar-ficha style="margin-left:auto">
+        <span aria-hidden="true">✕</span>
+        <span class="solo-lector">Cerrar ficha</span>
+      </button>
+    </div>
+    <div class="ficha__cuerpo" id="ficha-mapa-cuerpo"></div>
+  </dialog>
+
+  <script type="application/json" id="datos-mapa" set:html={json}></script>
+</section>
+
+<script>
+  import '../scripts/mapa';
+</script>

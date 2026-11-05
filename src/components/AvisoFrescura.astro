@@ -1,0 +1,38 @@
+---
+import { site } from '../lib/content';
+import { etiquetaFrescura } from '../lib/tiempo';
+
+interface Props {
+  fecha: string;
+  /** Compacto para tarjetas y tablas; completo para la ficha. */
+  compacto?: boolean;
+}
+
+const { fecha, compacto = false } = Astro.props;
+const etiqueta = etiquetaFrescura(fecha, site.umbral_desactualizado_horas);
+---
+
+<span
+  class:list={['frescura', etiqueta.desactualizado && 'frescura--vencida']}
+  data-frescura
+  data-fecha={fecha}
+  data-umbral={site.umbral_desactualizado_horas}
+>
+  <span data-frescura-texto>{etiqueta.texto}</span>
+  {!compacto && (
+    <>
+      {' · '}
+      <time datetime={fecha}>{etiqueta.absoluta}</time>
+    </>
+  )}
+  {etiqueta.desactualizado && (
+    <span class="solo-lector">
+      . La información supera el umbral configurado y puede estar desactualizada.
+    </span>
+  )}
+  {compacto && (
+    <time class="solo-lector" datetime={fecha}>
+      {etiqueta.absoluta}
+    </time>
+  )}
+</span>

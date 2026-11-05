@@ -1,0 +1,20 @@
+---
+import type { TipoRecursoT } from '../lib/schema';
+
+interface Props {
+  tipo: TipoRecursoT;
+  tamano?: 'normal' | 'pequeno';
+}
+
+const { tipo, tamano = 'normal' } = Astro.props;
+const estilo = `background:${tipo.color};${tamano === 'pequeno' ? 'width:22px;height:22px;font-size:.62rem;' : ''}`;
+---
+
+<span
+  class={`marcador marcador--${tipo.forma}`}
+  style={estilo}
+  role="img"
+  aria-label={`Símbolo de ${tipo.etiqueta}`}
+>
+  <span aria-hidden="true">{tipo.simbolo}</span>
+</span>

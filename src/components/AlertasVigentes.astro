@@ -1,0 +1,77 @@
+---
+import type { AlertaDestacada, TrasladoDestacado } from '../lib/content';
+import { conBase } from '../lib/rutas';
+import { formatearAbsoluta, formatearRelativa } from '../lib/tiempo';
+
+interface Props {
+  alertas: AlertaDestacada[];
+  traslados: TrasladoDestacado[];
+  ahora?: Date;
+}
+
+const { alertas, traslados, ahora = new Date() } = Astro.props;
+
+const severidadTexto = {
+  critica: 'Crítica',
+  precaucion: 'Precaución',
+  info: 'Información',
+} as const;
+---
+
+<section class="aviso--info aviso" aria-labelledby="titulo-ahora">
+  <h2 id="titulo-ahora">Ahora mismo</h2>
+
+  {alertas.length === 0 && traslados.length === 0 && (
+    <p>Sin alertas críticas ni traslados proyectados en este momento.</p>
+  )}
+
+  {alertas.length > 0 && (
+    <ul class="lista-alertas" style="list-style:none;margin:0;padding:0;display:grid;gap:.5rem">
+      {alertas.map(({ recurso, alerta }) => (
+        <li>
+          <p style="margin:0">
+            <strong>{severidadTexto[alerta.severidad]}:</strong> {alerta.texto}
+          </p>
+          <p style="margin:0;font-size:.85rem;font-weight:400">
+            <a href={conBase(`/recurso/${recurso.id}`)}>{recurso.nombre}</a>
+            {' · '}
+            <time datetime={alerta.fecha}>{formatearRelativa(alerta.fecha, ahora)}</time>
+            {' · '}
+            <span>{formatearAbsoluta(alerta.fecha)}</span>
+          </p>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {traslados.length > 0 && (
+    <div>
+      <h3 style="margin:.5rem 0 .25rem;font-size:.95rem">Traslados proyectados</h3>
+      <ul style="list-style:none;margin:0;padding:0;display:grid;gap:.5rem">
+        {traslados.map(({ recurso, derivado }) => {
+          const futura = derivado.futura;
+          if (futura === undefined) return null;
+          return (
+            <li>
+              <p style="margin:0">
+                <strong>{recurso.nombre}</strong> hacia {futura.lugar.nombre}
+                <span class="badge badge--neutral" style="margin-left:.4rem">
+                  {futura.estado === 'en_curso' ? 'En curso' : 'Proyección, no confirmada'}
+                </span>
+              </p>
+              <p style="margin:0;font-size:.85rem;font-weight:400">
+                {futura.fecha !== undefined && (
+                  <>
+                    <time datetime={futura.fecha}>{formatearAbsoluta(futura.fecha)}</time>
+                    {' · '}
+                  </>
+                )}
+                {futura.motivo}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  )}
+</section>

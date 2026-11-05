@@ -1,0 +1,21 @@
+# Comunas y sectores usados para filtrar. Los recursos referencian estos id.
+
+[[zonas]]
+id = "las-palmas"
+nombre = "Las Palmas"
+comuna = "Vista Verde"
+
+[[zonas]]
+id = "el-mirador"
+nombre = "El Mirador"
+comuna = "Vista Verde"
+
+[[zonas]]
+id = "quebrada-seca"
+nombre = "Quebrada Seca"
+comuna = "Vista Verde"
+
+[[zonas]]
+id = "estadio-municipal"
+nombre = "Estadio Municipal"
+comuna = "Vista Verde"

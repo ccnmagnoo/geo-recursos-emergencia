@@ -1,0 +1,37 @@
+titulo = "Mapa de Recursos de Emergencia"
+subtitulo = "Incendio forestal — Sector Las Palmas"
+institucion = "Municipalidad de Vista Verde — Dirección de Emergencias"
+contacto = "Coordinación: +56 9 0000 0000 (solo datos operativos)"
+umbral_desactualizado_horas = 12
+zona_horaria = "America/Santiago"
+mostrar_ejemplos = true
+aviso = "Datos de demostración. No uses este sitio para tomar decisiones reales."
+
+[mapa]
+centro_lat = -33.0455
+centro_lng = -71.5215
+zoom = 14
+
+[teselas]
+url = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+atribucion = "© colaboradores de OpenStreetMap"
+atribucion_url = "https://www.openstreetmap.org/copyright"
+max_zoom = 19
+
+[[emergencias]]
+nombre = "Bomberos"
+telefono = "132"
+
+[[emergencias]]
+nombre = "SAMU"
+telefono = "131"
+descripcion = "Ambulancias y urgencias médicas"
+
+[[emergencias]]
+nombre = "Carabineros"
+telefono = "133"
+
+[[emergencias]]
+nombre = "SENAPRED"
+telefono = "1595"
+descripcion = "Emergencias y desastres"

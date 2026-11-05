@@ -1,0 +1,16 @@
+# El contenido es dato operativo, no código: se escribe con el panel y el
+# serializador propio, que preserva el orden y los comentarios. No se reformatea.
+content/
+
+# Artefactos
+dist/
+node_modules/
+.astro/
+package-lock.json
+coverage/
+playwright-report/
+test-results/
+.backup/
+
+# Material de referencia del usuario
+library/

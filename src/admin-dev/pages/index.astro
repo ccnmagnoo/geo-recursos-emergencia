@@ -1,0 +1,209 @@
+---
+import AdminLayout from '../layout/AdminLayout.astro';
+import { validarContenido } from '../lib/archivos';
+import { estadoLegible } from '../lib/admin-textos';
+
+export const prerender = false;
+
+const { dataset, issues, ok } = await validarContenido();
+const errores = issues.filter((issue) => issue.severity === 'error');
+
+const tipos = (dataset?.tipos ?? [])
+  .filter((tipo) => tipo.categoria === 'movil' || tipo.categoria === 'fijo')
+  .map((tipo) => ({
+    id: tipo.id,
+    etiqueta: tipo.etiqueta,
+    campos: tipo.campos.map((campo) => ({
+      clave: campo.clave,
+      etiqueta: campo.etiqueta,
+      tipo: campo.tipo,
+      requerido: campo.requerido,
+      unidad: campo.unidad ?? '',
+      opciones: campo.opciones ?? [],
+      min: campo.min ?? null,
+      max: campo.max ?? null,
+    })),
+  }));
+
+const recursos = (dataset?.recursos ?? []).slice().sort((a, b) => a.id.localeCompare(b.id));
+const zonas = dataset?.zonas ?? [];
+const tiposPorId = new Map((dataset?.tipos ?? []).map((tipo) => [tipo.id, tipo]));
+---
+
+<AdminLayout titulo="Recursos">
+  <h1>Recursos</h1>
+
+  {!ok && (
+    <div class="aviso aviso--critico" style="margin-bottom:1rem">
+      <p>
+        <strong>El contenido no valida ({errores.length} errores).</strong> Corrige esto antes de
+        seguir: el build fallará.
+      </p>
+      <ul>
+        {errores.slice(0, 8).map((issue) => (
+          <li>
+            <code>
+              {issue.ruta}
+              {issue.linea === undefined ? '' : `:${issue.linea}`}
+            </code>{' '}
+            — {issue.message}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem">
+    <button type="button" class="boton boton--secundario" data-validar>
+      Validar todo
+    </button>
+    <button type="button" class="boton boton--secundario" data-respaldo>
+      Exportar respaldo
+    </button>
+  </div>
+
+  <section aria-labelledby="nuevo-titulo" style="margin-bottom:2rem">
+    <h2 id="nuevo-titulo">Nuevo recurso</h2>
+    <form
+      class="tarjeta"
+      data-endpoint="/api/admin/crear"
+      data-recargar="true"
+      style="max-width:44rem"
+    >
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.75rem">
+        <div class="campo">
+          <label for="nuevo-id">Identificador</label>
+          <input id="nuevo-id" name="id" required placeholder="TIL-002" autocomplete="off" />
+        </div>
+        <div class="campo">
+          <label for="nuevo-tipo">Tipo</label>
+          <select id="nuevo-tipo" name="tipo" required data-tipos>
+            {tipos.map((tipo) => (
+              <option value={tipo.id}>{tipo.etiqueta}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="nuevo-nombre">Nombre visible</label>
+        <input id="nuevo-nombre" name="nombre" required autocomplete="off" />
+      </div>
+
+      <div class="campo">
+        <label for="nuevo-institucion">Institución responsable</label>
+        <input id="nuevo-institucion" name="institucion" required autocomplete="off" />
+      </div>
+
+      <div class="campo">
+        <label for="nuevo-descripcion">Descripción breve</label>
+        <textarea id="nuevo-descripcion" name="descripcion" rows="2"></textarea>
+      </div>
+
+      <div class="campo">
+        <label for="nuevo-zona">Zona</label>
+        <select id="nuevo-zona" name="zona">
+          <option value="">Sin zona</option>
+          {zonas.map((zona) => (
+            <option value={zona.id}>{zona.nombre}</option>
+          ))}
+        </select>
+      </div>
+
+      <fieldset style="border:1px solid var(--borde);border-radius:var(--radio);padding:.75rem">
+        <legend>Ubicación</legend>
+        <div class="campo">
+          <label for="nuevo-link">Link de Google Maps</label>
+          <div style="display:flex;flex-wrap:wrap;gap:.5rem">
+            <input
+              id="nuevo-link"
+              name="gmaps_url"
+              autocomplete="off"
+              placeholder="https://maps.app.goo.gl/… o https://www.google.com/maps/…"
+              style="flex:1 1 16rem"
+            />
+            <button type="button" class="boton boton--secundario" data-resolver-gmaps>
+              Extraer coordenadas
+            </button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(8rem,1fr));gap:.75rem">
+          <div class="campo">
+            <label for="nuevo-lat">Latitud</label>
+            <input id="nuevo-lat" name="lat" inputmode="decimal" autocomplete="off" />
+          </div>
+          <div class="campo">
+            <label for="nuevo-lng">Longitud</label>
+            <input id="nuevo-lng" name="lng" inputmode="decimal" autocomplete="off" />
+          </div>
+        </div>
+        <div class="campo">
+          <label for="nuevo-lugar">Nombre del lugar</label>
+          <input id="nuevo-lugar" name="ubicacion_nombre" autocomplete="off" />
+        </div>
+      </fieldset>
+
+      <div>
+        <h3 style="font-size:.95rem">Datos del tipo</h3>
+        <div id="detalles-nuevo" style="display:grid;gap:.75rem"></div>
+      </div>
+
+      <div class="campo">
+        <label for="nuevo-autor">Quién registra</label>
+        <input id="nuevo-autor" name="autor" autocomplete="off" placeholder="Operador" />
+      </div>
+
+      <button type="submit" class="boton">
+        Crear recurso
+      </button>
+    </form>
+  </section>
+
+  <section aria-labelledby="lista-titulo">
+    <h2 id="lista-titulo">Contenido actual</h2>
+    <p class="frescura">
+      {recursos.length} recursos en total (incluye borradores). Los cambios se escriben en
+      <code>content/recursos/</code>; publica con git.
+    </p>
+    <div class="tabla-envoltorio">
+      <table>
+        <caption>Recursos del repositorio</caption>
+        <thead>
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Publicado</th>
+            <th scope="col">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {recursos.map((recurso) => (
+            <tr>
+              <th scope="row">{recurso.id}</th>
+              <td>{recurso.nombre}</td>
+              <td>{tiposPorId.get(recurso.tipo)?.etiqueta ?? recurso.tipo}</td>
+              <td>{estadoLegible(recurso.estado_actual)}</td>
+              <td>{recurso.publicado ? 'Sí' : 'No'}</td>
+              <td>
+                <a href={`/admin/recurso/${recurso.id}`}>Abrir</a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="issues-titulo" style="margin-top:2rem">
+    <h2 id="issues-titulo">Último resultado de validación</h2>
+    <div id="issues-panel" hidden></div>
+  </section>
+
+  <script
+    type="application/json"
+    id="datos-tipos"
+    set:html={JSON.stringify(tipos).replaceAll('<', '\\u003c')}
+  ></script>
+</AdminLayout>

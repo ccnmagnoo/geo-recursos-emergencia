@@ -1,0 +1,31 @@
+id = "GEN-005"
+tipo = "generador"
+nombre = "[ejemplo] Generador 5 kW — Puesto de mando"
+institucion = "Bomberos de Vista Verde"
+descripcion = "Generador de respaldo para comunicaciones y carga de equipos."
+publicado = true
+ejemplo = true
+estado_actual = "operativo"
+zona = "las-palmas"
+
+[detalles]
+potencia_kw = 5.0
+combustible_pct = 45
+horas_uso = 12
+
+[ubicacion_actual]
+nombre = "Puesto de mando — Estadio Municipal"
+lat = -33.0509
+lng = -71.5089
+desde = 2026-11-05T06:00:00-03:00
+
+[[historial_estado]]
+fecha = 2026-11-05T06:00:00-03:00
+estado = "operativo"
+autor = "Operador G"
+nota = "Conectado al puesto de mando."
+
+[[observaciones]]
+fecha = 2026-11-05T10:00:00-03:00
+autor = "Operador G"
+texto = "Combustible al 45%; pedir relleno antes de las 20:00."

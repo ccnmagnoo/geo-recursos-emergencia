@@ -1,0 +1,35 @@
+id = "ALB-002"
+tipo = "albergue"
+nombre = "[ejemplo] Albergue — Liceo Bicentenario"
+institucion = "Municipalidad de Vista Verde / Cruz Roja"
+descripcion = "Albergue con colchonetas, abrigo y alimentación. Se admiten mascotas con correa."
+publicado = true
+ejemplo = true
+estado_actual = "operativo"
+zona = "estadio-municipal"
+
+[detalles]
+capacidad = 120
+ocupacion = 85
+admite_mascotas = true
+accesible = true
+horario = "24 horas"
+
+[ubicacion_actual]
+nombre = "Liceo Bicentenario de Vista Verde"
+lat = -33.0527
+lng = -71.5075
+desde = 2026-11-03T22:00:00-03:00
+
+[[historial_estado]]
+fecha = 2026-11-03T22:00:00-03:00
+estado = "operativo"
+autor = "Operador D"
+nota = "Habilitado con 120 cupos."
+
+[[alertas]]
+id = "A-0003"
+fecha = 2026-11-04T08:00:00-03:00
+severidad = "info"
+texto = "Se necesitan frazadas y kits de higiene."
+vigente = true

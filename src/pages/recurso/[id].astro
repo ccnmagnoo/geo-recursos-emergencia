@@ -1,0 +1,295 @@
+---
+import Base from '../../layouts/Base.astro';
+import BadgeEstado from '../../components/BadgeEstado.astro';
+import AvisoFrescura from '../../components/AvisoFrescura.astro';
+import { recursos, site, tipoDe, zonas } from '../../lib/content';
+import { conBase } from '../../lib/rutas';
+import {
+  alertasVigentesDe,
+  detallesLegibles,
+  etiquetaEstado,
+  ultimaActualizacion,
+} from '../../lib/recurso';
+import { derivarUbicaciones } from '../../lib/traslados';
+import { formatearAbsoluta } from '../../lib/tiempo';
+import { urlComoLlegar } from '../../lib/url';
+import type { RecursoT } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return recursos.map((recurso) => ({ params: { id: recurso.id }, props: { recurso } }));
+}
+
+interface Props {
+  recurso: RecursoT;
+}
+
+const { recurso } = Astro.props;
+const tipo = tipoDe(recurso);
+const zona = zonas.find((candidata) => candidata.id === recurso.zona);
+const derivado = derivarUbicaciones(recurso);
+const alertas = alertasVigentesDe(recurso);
+const actualizado = ultimaActualizacion(recurso);
+const llegada = urlComoLlegar(
+  recurso.ubicacion_actual.gmaps_url,
+  recurso.ubicacion_actual.lat,
+  recurso.ubicacion_actual.lng,
+);
+const detalles = detallesLegibles(recurso, tipo);
+const corregidas = new Set(recurso.correcciones.map((correccion) => correccion.corrige));
+
+const historial = [...recurso.historial_estado].sort(
+  (a, b) => Date.parse(b.fecha) - Date.parse(a.fecha),
+);
+const observaciones = [...recurso.observaciones].sort(
+  (a, b) => Date.parse(b.fecha) - Date.parse(a.fecha),
+);
+
+const titulo = recurso.nombre;
+const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${etiquetaEstado(recurso.estado_actual)}. Actualizado ${formatearAbsoluta(actualizado)}.`;
+---
+
+<Base titulo={titulo} descripcion={descripcion}>
+  <div class="envoltorio" style="padding-block:1rem;max-width:52rem">
+    <p class="no-imprimir" style="margin-bottom:.5rem">
+      <a href={conBase('/')}>← Volver al mapa</a>
+    </p>
+
+    <article>
+      <header>
+        <p class="frescura" style="margin:0">
+          {tipo.etiqueta} · {recurso.id}
+          {zona && <> · {zona.nombre}</>}
+        </p>
+        <h1 style="margin-top:.25rem">{recurso.nombre}</h1>
+        <p style="margin:0 0 .5rem">{recurso.institucion}</p>
+
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
+          <BadgeEstado estado={recurso.estado_actual} />
+          <AvisoFrescura fecha={actualizado} />
+        </div>
+      </header>
+
+      {recurso.descripcion !== '' && <p style="margin-top:1rem">{recurso.descripcion}</p>}
+
+      {alertas.length > 0 && (
+        <section class="ficha__seccion" aria-labelledby="alertas-titulo">
+          <h2 id="alertas-titulo">Alertas vigentes</h2>
+          {alertas.map((alerta) => (
+            <div
+              class:list={[
+                'aviso',
+                alerta.severidad === 'critica' && 'aviso--critico',
+                alerta.severidad === 'info' && 'aviso--info',
+              ]}
+              style="margin-bottom:.5rem"
+            >
+              <p>
+                <strong>
+                  {alerta.severidad === 'critica'
+                    ? 'Crítica'
+                    : alerta.severidad === 'precaucion'
+                      ? 'Precaución'
+                      : 'Información'}
+                  :
+                </strong>{' '}
+                {alerta.texto}
+              </p>
+              <p class="frescura" style="margin:0">
+                <time datetime={alerta.fecha}>{formatearAbsoluta(alerta.fecha)}</time>
+              </p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      <section class="ficha__seccion" aria-labelledby="ubicacion-titulo">
+        <h2 id="ubicacion-titulo">Ubicación actual</h2>
+        <p style="margin-bottom:.25rem">{recurso.ubicacion_actual.nombre}</p>
+        <p class="ficha__coordenadas" style="margin-bottom:.75rem">
+          {recurso.ubicacion_actual.lat.toFixed(5)}, {recurso.ubicacion_actual.lng.toFixed(5)}
+        </p>
+        <div class="ficha__acciones no-imprimir">
+          <a
+            class="boton boton--grande"
+            href={llegada.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cómo llegar en Google Maps
+          </a>
+          <button
+            type="button"
+            class="boton boton--secundario"
+            data-copiar={`${recurso.ubicacion_actual.lat}, ${recurso.ubicacion_actual.lng}`}
+          >
+            Copiar coordenadas
+          </button>
+        </div>
+      </section>
+
+      <section class="ficha__seccion" aria-labelledby="traslados-titulo">
+        <h2 id="traslados-titulo">Traslados</h2>
+        <ul class="traslados">
+          {derivado.anterior && (
+            <li class="traslado">
+              <span class="traslado__etiqueta">Ubicación anterior</span>
+              <div>{derivado.anterior.lugar.nombre}</div>
+              {derivado.anterior.fecha && (
+                <div class="frescura">
+                  <time datetime={derivado.anterior.fecha}>
+                    {formatearAbsoluta(derivado.anterior.fecha)}
+                  </time>
+                </div>
+              )}
+            </li>
+          )}
+
+          <li class="traslado traslado--actual">
+            <span class="traslado__etiqueta">Ubicación actual</span>
+            <div>{recurso.ubicacion_actual.nombre}</div>
+            {recurso.ubicacion_actual.desde && (
+              <div class="frescura">
+                Desde el{' '}
+                <time datetime={recurso.ubicacion_actual.desde}>
+                  {formatearAbsoluta(recurso.ubicacion_actual.desde)}
+                </time>
+              </div>
+            )}
+          </li>
+
+          {derivado.futura && (
+            <li class="traslado">
+              <span class="traslado__etiqueta">
+                {derivado.futura.estado === 'en_curso'
+                  ? 'En traslado hacia'
+                  : 'Proyección, no confirmada'}
+              </span>
+              <div>{derivado.futura.lugar.nombre}</div>
+              {derivado.futura.fecha && (
+                <div class="frescura">
+                  Estimado:{' '}
+                  <time datetime={derivado.futura.fecha}>
+                    {formatearAbsoluta(derivado.futura.fecha)}
+                  </time>
+                </div>
+              )}
+              {derivado.futura.motivo && (
+                <div class="frescura">Motivo: {derivado.futura.motivo}</div>
+              )}
+            </li>
+          )}
+        </ul>
+
+        {derivado.futura?.estado === 'proyectado' && (
+          <p class="aviso aviso--info" style="margin-top:.75rem">
+            Este traslado es una <strong>proyección</strong>: todavía no ocurrió y la fecha es una
+            estimación. La ubicación actual sigue siendo la indicada arriba.
+          </p>
+        )}
+      </section>
+
+      {detalles.length > 0 && (
+        <section class="ficha__seccion" aria-labelledby="detalles-titulo">
+          <h2 id="detalles-titulo">Datos del recurso</h2>
+          <dl class="detalles">
+            {detalles.map((detalle) => (
+              <>
+                <dt>{detalle.etiqueta}</dt>
+                <dd>
+                  {detalle.unidad === undefined
+                    ? detalle.valor
+                    : `${detalle.valor} ${detalle.unidad}`}
+                </dd>
+              </>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <section class="ficha__seccion" aria-labelledby="historial-titulo">
+        <h2 id="historial-titulo">Historial de estado</h2>
+        <ol class="linea-tiempo">
+          {historial.map((evento, indice) => {
+            const corregido = corregidas.has(`historial_estado:${evento.fecha}`);
+            return (
+              <li
+                class:list={[
+                  'linea-tiempo__evento',
+                  indice === 0 && 'linea-tiempo__evento--actual',
+                ]}
+              >
+                <strong class:list={[corregido && 'correccion']}>
+                  {etiquetaEstado(evento.estado)}
+                </strong>
+                {corregido && (
+                  <span class="correccion-nota">Este evento fue corregido más abajo.</span>
+                )}
+                <div class="linea-tiempo__fecha">
+                  <time datetime={evento.fecha}>{formatearAbsoluta(evento.fecha)}</time> ·{' '}
+                  {evento.autor}
+                </div>
+                {evento.nota && <p class="linea-tiempo__nota">{evento.nota}</p>}
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      {observaciones.length > 0 && (
+        <section class="ficha__seccion" aria-labelledby="observaciones-titulo">
+          <h2 id="observaciones-titulo">Observaciones</h2>
+          {observaciones.map((observacion) => (
+            <div style="margin-bottom:.75rem">
+              <p
+                style="margin-bottom:.15rem"
+                class:list={[corregidas.has(`observaciones:${observacion.fecha}`) && 'correccion']}
+              >
+                {observacion.texto}
+              </p>
+              <p class="frescura" style="margin:0">
+                <time datetime={observacion.fecha}>{formatearAbsoluta(observacion.fecha)}</time> ·{' '}
+                {observacion.autor}
+              </p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {recurso.correcciones.length > 0 && (
+        <section class="ficha__seccion" aria-labelledby="correcciones-titulo">
+          <h2 id="correcciones-titulo">Correcciones</h2>
+          <p class="frescura">
+            El historial no se borra: estas notas explican qué se corrigió y por qué.
+          </p>
+          {recurso.correcciones.map((correccion) => (
+            <div style="margin-bottom:.75rem">
+              <p style="margin-bottom:.15rem">{correccion.nota}</p>
+              <p class="frescura" style="margin:0">
+                Corrige <code>{correccion.corrige}</code> ·{' '}
+                <time datetime={correccion.fecha}>{formatearAbsoluta(correccion.fecha)}</time> ·{' '}
+                {correccion.autor}
+              </p>
+            </div>
+          ))}
+        </section>
+      )}
+    </article>
+
+    <nav
+      class="no-imprimir"
+      style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:.5rem"
+      aria-label="Otras vistas"
+    >
+      <a class="boton boton--secundario" href={conBase('/')}>
+        Ver en el mapa
+      </a>
+      <a class="boton boton--secundario" href={conBase('/lista')}>
+        Lista completa
+      </a>
+    </nav>
+
+    <p class="frescura" style="margin-top:1.5rem">
+      Responsable: {recurso.institucion}. Si detectas un error, contacta a {site.contacto}.
+    </p>
+  </div>
+</Base>

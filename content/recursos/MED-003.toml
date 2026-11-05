@@ -1,0 +1,43 @@
+id = "MED-003"
+tipo = "puesto_medico_movil"
+nombre = "[ejemplo] Puesto médico móvil — Quebrada Seca"
+institucion = "Servicio de Salud / SAMU"
+descripcion = "Atención de urgencias menores, curaciones y apoyo psicológico."
+publicado = true
+ejemplo = true
+estado_actual = "con_falla"
+zona = "quebrada-seca"
+
+[detalles]
+capacidad_pacientes = 30
+especialidades = "Enfermería, curaciones, primeros auxilios, contención emocional"
+
+[ubicacion_actual]
+nombre = "Cancha Quebrada Seca"
+lat = -33.0401
+lng = -71.5302
+desde = 2026-11-05T07:30:00-03:00
+
+[[historial_estado]]
+fecha = 2026-11-05T07:30:00-03:00
+estado = "operativo"
+autor = "Operador E"
+nota = "Inicio de atención."
+
+[[historial_estado]]
+fecha = 2026-11-05T11:20:00-03:00
+estado = "con_falla"
+autor = "Operador E"
+nota = "Falla el generador auxiliar; atención reducida."
+
+[[alertas]]
+id = "A-0004"
+fecha = 2026-11-05T11:25:00-03:00
+severidad = "critica"
+texto = "Puesto médico sin energía estable. Priorizar generador para este punto."
+vigente = true
+
+[[observaciones]]
+fecha = 2026-11-05T11:40:00-03:00
+autor = "Operador E"
+texto = "Se solicita generador de 5 kW al puesto de mando."

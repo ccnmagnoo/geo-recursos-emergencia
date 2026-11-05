@@ -1,0 +1,68 @@
+---
+import '../../styles/global.css';
+
+interface Props {
+  titulo: string;
+  descripcion?: string;
+}
+
+const { titulo, descripcion = 'Panel local de administración. Solo existe en desarrollo.' } =
+  Astro.props;
+
+// En desarrollo se necesita permitir el HMR y los estilos en línea de Vite.
+const csp = [
+  "default-src 'self'",
+  "img-src 'self' data: blob: https:",
+  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline'",
+  "connect-src 'self' ws: wss: https:",
+  "font-src 'self' data:",
+  "object-src 'none'",
+  "base-uri 'none'",
+].join('; ');
+---
+
+<!doctype html>
+<html lang="es-CL">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{titulo} — Panel local</title>
+    <meta name="description" content={descripcion} />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">
+      Saltar al contenido principal
+    </a>
+
+    <header class="encabezado">
+      <div class="envoltorio encabezado__barra">
+        <span class="encabezado__marca">
+          <span class="encabezado__titulo">Panel local</span>
+          <span class="encabezado__institucion">Solo existe con astro dev · no se publica</span>
+        </span>
+        <nav class="nav" aria-label="Navegación del panel">
+          <a href="/admin">Recursos</a>
+          <a href="/" target="_blank" rel="noopener noreferrer">
+            Ver sitio
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenido" tabindex="-1" class="envoltorio" style="padding-block:1rem">
+      <slot />
+    </main>
+
+    <div class="envoltorio" style="padding-bottom:2rem">
+      <p id="estado-panel" role="status" aria-live="polite" class="aviso aviso--info" hidden></p>
+    </div>
+
+    <script>
+      import '../scripts/admin';
+    </script>
+  </body>
+</html>

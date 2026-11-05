@@ -1,0 +1,374 @@
+---
+import AdminLayout from '../layout/AdminLayout.astro';
+import { leerRecurso, validarContenido } from '../lib/archivos';
+import { estadoLegible, estadoTrasladoLegible, severidadLegible } from '../lib/admin-textos';
+import { formatearAbsoluta } from '../../lib/tiempo';
+
+export const prerender = false;
+
+const id = (Astro.params.id ?? '').toUpperCase();
+const { dataset, issues, ok } = await validarContenido();
+const recurso = dataset?.recursos.find((candidato) => candidato.id === id);
+const texto = recurso === undefined ? null : await leerRecurso(id);
+
+if (recurso === undefined || texto === null) {
+  Astro.response.status = 404;
+}
+
+const tipo = recurso === undefined ? undefined : dataset?.tiposPorId.get(recurso.tipo);
+const errores = issues.filter((issue) => issue.severity === 'error');
+const abiertos = (recurso?.traslados ?? []).filter(
+  (traslado) => traslado.estado === 'proyectado' || traslado.estado === 'en_curso',
+);
+const alertasVigentes = (recurso?.alertas ?? []).filter((alerta) => alerta.vigente);
+const ahoraLocal = new Date().toISOString().slice(0, 16);
+---
+
+<AdminLayout titulo={recurso === undefined ? 'Recurso no encontrado' : recurso.nombre}>
+  <p>
+    <a href="/admin">← Volver a recursos</a>
+  </p>
+
+  {recurso === undefined ? (
+    <div class="aviso aviso--critico">
+      <p>No existe el recurso {id}.</p>
+    </div>
+  ) : (
+    <>
+      <h1>{recurso.nombre}</h1>
+      <p class="frescura">
+        {recurso.id} · {tipo?.etiqueta ?? recurso.tipo} · {recurso.institucion} ·
+        {recurso.publicado ? ' publicado' : ' borrador'} · estado:{' '}
+        {estadoLegible(recurso.estado_actual)}
+      </p>
+      <p>
+        <a href={`/recurso/${recurso.id}/`} target="_blank" rel="noopener noreferrer">
+          Ver ficha pública
+        </a>
+        {' · '}
+        <a href={`/?recurso=${recurso.id}`} target="_blank" rel="noopener noreferrer">
+          Ver en el mapa
+        </a>
+        {' · '}
+        ubicación actual: {recurso.ubicacion_actual.nombre} ({recurso.ubicacion_actual.lat},{' '}
+        {recurso.ubicacion_actual.lng})
+      </p>
+
+      {!ok && (
+        <div class="aviso aviso--critico">
+          <p>
+            <strong>Hay {errores.length} errores de contenido.</strong> Las acciones nuevas se
+            rechazarán hasta corregirlos.
+          </p>
+        </div>
+      )}
+
+      <div style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(min(100%,22rem),1fr));margin-top:1rem">
+        <section class="tarjeta" aria-labelledby="estado-titulo">
+          <h2 id="estado-titulo" style="font-size:1rem">
+            Cambiar estado
+          </h2>
+          <form data-endpoint="/api/admin/accion" data-recargar="true">
+            <input type="hidden" name="id" value={recurso.id} />
+            <input type="hidden" name="accion" value="estado" />
+            <div class="campo">
+              <label for="accion-estado">Estado nuevo</label>
+              <select id="accion-estado" name="estado" required>
+                <option value="operativo">Funcionando</option>
+                <option value="con_falla">Con falla</option>
+                <option value="fuera_de_servicio">Fuera de servicio</option>
+                <option value="en_traslado">En traslado</option>
+                <option value="planificado">Planificado</option>
+                <option value="retirado">Retirado</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="accion-estado-nota">Nota (opcional)</label>
+              <input id="accion-estado-nota" name="nota" autocomplete="off" />
+            </div>
+            <div class="campo">
+              <label for="accion-estado-fecha">Fecha y hora</label>
+              <input
+                id="accion-estado-fecha"
+                type="datetime-local"
+                name="fecha"
+                value={ahoraLocal}
+              />
+            </div>
+            <div class="campo">
+              <label for="accion-estado-autor">Quién registra</label>
+              <input id="accion-estado-autor" name="autor" autocomplete="off" />
+            </div>
+            <button type="submit" class="boton">
+              Registrar estado
+            </button>
+          </form>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="observacion-titulo">
+          <h2 id="observacion-titulo" style="font-size:1rem">
+            Agregar observación
+          </h2>
+          <form data-endpoint="/api/admin/accion" data-recargar="true">
+            <input type="hidden" name="id" value={recurso.id} />
+            <input type="hidden" name="accion" value="observacion" />
+            <div class="campo">
+              <label for="observacion-texto">Texto</label>
+              <textarea id="observacion-texto" name="texto" rows="3" required></textarea>
+            </div>
+            <div class="campo">
+              <label for="observacion-fecha">Fecha y hora</label>
+              <input id="observacion-fecha" type="datetime-local" name="fecha" value={ahoraLocal} />
+            </div>
+            <div class="campo">
+              <label for="observacion-autor">Quién registra</label>
+              <input id="observacion-autor" name="autor" autocomplete="off" />
+            </div>
+            <button type="submit" class="boton">
+              Agregar
+            </button>
+          </form>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="alerta-titulo">
+          <h2 id="alerta-titulo" style="font-size:1rem">
+            Emitir alerta
+          </h2>
+          <form data-endpoint="/api/admin/accion" data-recargar="true">
+            <input type="hidden" name="id" value={recurso.id} />
+            <input type="hidden" name="accion" value="alerta" />
+            <div class="campo">
+              <label for="alerta-severidad">Severidad</label>
+              <select id="alerta-severidad" name="severidad" required>
+                <option value="info">Información</option>
+                <option value="precaucion">Precaución</option>
+                <option value="critica">Crítica</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="alerta-texto">Texto</label>
+              <textarea id="alerta-texto" name="texto" rows="2" required></textarea>
+            </div>
+            <div class="campo">
+              <label for="alerta-fecha">Fecha y hora</label>
+              <input id="alerta-fecha" type="datetime-local" name="fecha" value={ahoraLocal} />
+            </div>
+            <div class="campo">
+              <label for="alerta-autor">Quién registra</label>
+              <input id="alerta-autor" name="autor" autocomplete="off" />
+            </div>
+            <button type="submit" class="boton">
+              Emitir
+            </button>
+          </form>
+        </section>
+
+        <section class="tarjeta" aria-labelledby="traslado-titulo">
+          <h2 id="traslado-titulo" style="font-size:1rem">
+            Proyectar traslado
+          </h2>
+          <form data-endpoint="/api/admin/accion" data-recargar="true">
+            <input type="hidden" name="id" value={recurso.id} />
+            <input type="hidden" name="accion" value="proyectar_traslado" />
+            <div class="campo">
+              <label for="traslado-motivo">Motivo</label>
+              <input id="traslado-motivo" name="motivo" required autocomplete="off" />
+            </div>
+            <div class="campo">
+              <label for="traslado-destino">Destino</label>
+              <input id="traslado-destino" name="destino_nombre" required autocomplete="off" />
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+              <div class="campo">
+                <label for="traslado-lat">Latitud</label>
+                <input id="traslado-lat" name="destino_lat" inputmode="decimal" required />
+              </div>
+              <div class="campo">
+                <label for="traslado-lng">Longitud</label>
+                <input id="traslado-lng" name="destino_lng" inputmode="decimal" required />
+              </div>
+            </div>
+            <div class="campo">
+              <label for="traslado-fecha">Fecha estimada</label>
+              <input id="traslado-fecha" type="datetime-local" name="fecha" required />
+            </div>
+            <div class="campo">
+              <label for="traslado-autor">Quién registra</label>
+              <input id="traslado-autor" name="autor" autocomplete="off" />
+            </div>
+            <button type="submit" class="boton">
+              Proyectar
+            </button>
+          </form>
+          <p class="frescura">Se mostrará como proyección, no confirmada.</p>
+        </section>
+      </div>
+
+      <section style="margin-top:2rem" aria-labelledby="abiertos-titulo">
+        <h2 id="abiertos-titulo">Traslados abiertos</h2>
+        {abiertos.length === 0 ? (
+          <p>No hay traslados proyectados ni en curso.</p>
+        ) : (
+          abiertos.map((traslado) => (
+            <div class="tarjeta" style="margin-bottom:.75rem">
+              <p style="margin:0">
+                <strong>{traslado.id}</strong> · {estadoTrasladoLegible(traslado.estado)} ·{' '}
+                {traslado.destino.nombre}
+              </p>
+              <p class="frescura" style="margin:0">
+                {traslado.motivo}
+                {traslado.fecha_estimada &&
+                  ` · estimado ${formatearAbsoluta(traslado.fecha_estimada)}`}
+              </p>
+              <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.5rem">
+                <form data-endpoint="/api/admin/accion" data-recargar="true" style="flex:1 1 18rem">
+                  <input type="hidden" name="id" value={recurso.id} />
+                  <input type="hidden" name="accion" value="completar_traslado" />
+                  <input type="hidden" name="trasladoId" value={traslado.id} />
+                  <input type="hidden" name="destino_nombre" value={traslado.destino.nombre} />
+                  <input type="hidden" name="destino_lat" value={String(traslado.destino.lat)} />
+                  <input type="hidden" name="destino_lng" value={String(traslado.destino.lng)} />
+                  <div class="campo">
+                    <label for={`llegada-${traslado.id}`}>Hora real de llegada</label>
+                    <input
+                      id={`llegada-${traslado.id}`}
+                      type="datetime-local"
+                      name="fecha"
+                      value={ahoraLocal}
+                    />
+                  </div>
+                  <div class="campo">
+                    <label for={`final-${traslado.id}`}>Estado al llegar</label>
+                    <select id={`final-${traslado.id}`} name="estado_final">
+                      <option value="operativo">Funcionando</option>
+                      <option value="con_falla">Con falla</option>
+                      <option value="fuera_de_servicio">Fuera de servicio</option>
+                    </select>
+                  </div>
+                  <div class="campo">
+                    <label for={`autor-${traslado.id}`}>Quién confirma</label>
+                    <input id={`autor-${traslado.id}`} name="autor" autocomplete="off" />
+                  </div>
+                  <button type="submit" class="boton">
+                    Confirmar llegada
+                  </button>
+                </form>
+
+                <form data-endpoint="/api/admin/accion" data-recargar="true" style="align-self:end">
+                  <input type="hidden" name="id" value={recurso.id} />
+                  <input type="hidden" name="accion" value="cancelar_traslado" />
+                  <input type="hidden" name="trasladoId" value={traslado.id} />
+                  <button type="submit" class="boton boton--secundario">
+                    Cancelar traslado
+                  </button>
+                </form>
+              </div>
+            </div>
+          ))
+        )}
+      </section>
+
+      <section style="margin-top:2rem" aria-labelledby="alertas-titulo">
+        <h2 id="alertas-titulo">Alertas vigentes</h2>
+        {alertasVigentes.length === 0 ? (
+          <p>No hay alertas vigentes.</p>
+        ) : (
+          <ul style="list-style:none;padding:0;display:grid;gap:.5rem">
+            {alertasVigentes.map((alerta) => (
+              <li class="tarjeta">
+                <p style="margin:0">
+                  <strong>{severidadLegible(alerta.severidad)}</strong> · {alerta.texto}
+                </p>
+                <form data-endpoint="/api/admin/accion" data-recargar="true">
+                  <input type="hidden" name="id" value={recurso.id} />
+                  <input type="hidden" name="accion" value="resolver_alerta" />
+                  <input type="hidden" name="alertaId" value={alerta.id} />
+                  <button type="submit" class="boton boton--secundario">
+                    Marcar {alerta.id} como resuelta
+                  </button>
+                </form>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section style="margin-top:2rem" aria-labelledby="correccion-titulo">
+        <h2 id="correccion-titulo">Corregir un evento</h2>
+        <p class="frescura">
+          El historial no se edita: se agrega una corrección que apunta al evento.
+        </p>
+        <form class="tarjeta" data-endpoint="/api/admin/accion" data-recargar="true">
+          <input type="hidden" name="id" value={recurso.id} />
+          <input type="hidden" name="accion" value="correccion" />
+          <div class="campo">
+            <label for="correccion-corrige">Referencia del evento</label>
+            <select id="correccion-corrige" name="corrige" required>
+              {recurso.historial_estado.map((evento) => (
+                <option value={`historial_estado:${evento.fecha}`}>
+                  Estado «{estadoLegible(evento.estado)}» del {formatearAbsoluta(evento.fecha)}
+                </option>
+              ))}
+              {recurso.observaciones.map((observacion) => (
+                <option value={`observaciones:${observacion.fecha}`}>
+                  Observación del {formatearAbsoluta(observacion.fecha)}
+                </option>
+              ))}
+              {recurso.alertas.map((alerta) => (
+                <option value={`alertas:${alerta.id}`}>Alerta {alerta.id}</option>
+              ))}
+              {recurso.traslados.map((traslado) => (
+                <option value={`traslados:${traslado.id}`}>Traslado {traslado.id}</option>
+              ))}
+            </select>
+          </div>
+          <div class="campo">
+            <label for="correccion-nota">Qué se corrige</label>
+            <textarea id="correccion-nota" name="nota" rows="2" required></textarea>
+          </div>
+          <div class="campo">
+            <label for="correccion-autor">Quién corrige</label>
+            <input id="correccion-autor" name="autor" autocomplete="off" />
+          </div>
+          <button type="submit" class="boton">
+            Agregar corrección
+          </button>
+        </form>
+      </section>
+
+      <section style="margin-top:2rem" aria-labelledby="toml-titulo">
+        <h2 id="toml-titulo">Editar TOML directamente</h2>
+        <p class="frescura">
+          Para cambios que no cubren los formularios. Se valida todo antes de guardar y se revierte
+          si queda inválido. Nunca borres eventos: agrega una corrección.
+        </p>
+        <form data-endpoint="/api/admin/guardar" data-recargar="true">
+          <input type="hidden" name="id" value={recurso.id} />
+          <div class="campo">
+            <label for="toml-contenido">Contenido del archivo</label>
+            <textarea
+              id="toml-contenido"
+              name="contenido"
+              rows="24"
+              spellcheck="false"
+              style="font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.85rem"
+            >{texto}</textarea>
+          </div>
+          <button type="submit" class="boton">
+            Guardar TOML
+          </button>
+        </form>
+      </section>
+
+      <section style="margin-top:2rem" aria-labelledby="deshacer-titulo">
+        <h2 id="deshacer-titulo">Deshacer</h2>
+        <p class="frescura">
+          Restaura la copia más reciente de este archivo desde <code>.backup/</code>.
+        </p>
+        <button type="button" class="boton boton--secundario" data-deshacer={recurso.id}>
+          Deshacer último cambio de {recurso.id}
+        </button>
+      </section>
+    </>
+  )}
+</AdminLayout>

@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import BadgeEstado from '../components/BadgeEstado.astro';
+import AvisoFrescura from '../components/AvisoFrescura.astro';
+import { recursos, site, tipoDe, zonas, requerimientos, zonasGeo } from '../lib/content';
+import { conBase } from '../lib/rutas';
+import { detallesLegibles, ultimaActualizacion } from '../lib/recurso';
+import { urlComoLlegar } from '../lib/url';
+
+const zonaNombre = (id: string | undefined): string | undefined =>
+  id === undefined ? undefined : zonas.find((zona) => zona.id === id)?.nombre;
+
+const filas = recursos.map((recurso) => {
+  const tipo = tipoDe(recurso);
+  return {
+    recurso,
+    tipo,
+    zona: zonaNombre(recurso.zona),
+    actualizado: ultimaActualizacion(recurso),
+    llegada: urlComoLlegar(
+      recurso.ubicacion_actual.gmaps_url,
+      recurso.ubicacion_actual.lat,
+      recurso.ubicacion_actual.lng,
+    ),
+    detalles: detallesLegibles(recurso, tipo).slice(0, 2),
+  };
+});
+
+const requerimientosVisibles = requerimientos.filter(
+  (requerimiento) => requerimiento.estado !== 'cubierto',
+);
+---
+
+<Base
+  titulo="Lista de recursos"
+  descripcion="Lista completa de recursos de emergencia con estado, ubicación y hora de actualización. Funciona sin mapa y sin JavaScript."
+>
+  <div class="envoltorio" style="padding-block:1rem">
+    <h1>Recursos de emergencia</h1>
+    <p>
+      La misma información del mapa, en texto. Útil con mala señal, con lector de pantalla o para
+      imprimir. Cada fila indica cuándo se actualizó el dato.
+    </p>
+    <p class="no-imprimir">
+      <a class="boton boton--secundario" href={conBase('/')}>
+        Volver al mapa
+      </a>
+      <a class="boton boton--secundario" href={conBase('/imprimir')}>
+        Versión para imprimir
+      </a>
+    </p>
+
+    <div class="tabla-envoltorio" style="margin-top:1rem">
+      <table>
+        <caption>
+          {filas.length}recursos publicados · umbral de desactualización:
+          {site.umbral_desactualizado_horas}h
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Recurso</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Ubicación</th>
+            <th scope="col">Zona</th>
+            <th scope="col">Actualizado</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map(({ recurso, tipo, zona, actualizado, llegada, detalles }) => (
+            <tr>
+              <th scope="row">
+                <a href={conBase(`/recurso/${recurso.id}`)}>{recurso.nombre}</a>
+                <div class="frescura">{recurso.id}</div>
+              </th>
+              <td>{tipo.etiqueta}</td>
+              <td>
+                <BadgeEstado estado={recurso.estado_actual} />
+              </td>
+              <td>
+                {recurso.ubicacion_actual.nombre}
+                {detalles.length > 0 && (
+                  <div class="frescura">
+                    {detalles.map((detalle) => `${detalle.etiqueta}: ${detalle.valor}`).join(' · ')}
+                  </div>
+                )}
+              </td>
+              <td>{zona ?? '—'}</td>
+              <td>
+                <AvisoFrescura fecha={actualizado} compacto />
+              </td>
+              <td>
+                <a
+                  class="no-imprimir"
+                  href={llegada.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Cómo llegar
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 style="margin-top:2rem">Necesidades abiertas</h2>
+    {requerimientosVisibles.length === 0 ? (
+      <p>No hay requerimientos abiertos publicados.</p>
+    ) : (
+      <div class="tabla-envoltorio">
+        <table>
+          <caption>Pedidos de recursos que aún no están cubiertos del todo.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Qué se necesita</th>
+              <th scope="col">Cantidad</th>
+              <th scope="col">Prioridad</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Lugar</th>
+              <th scope="col">Asignado a</th>
+            </tr>
+          </thead>
+          <tbody>
+            {requerimientosVisibles.map((requerimiento) => (
+              <tr>
+                <th scope="row">{requerimiento.nombre}</th>
+                <td>{requerimiento.cantidad}</td>
+                <td>{requerimiento.prioridad}</td>
+                <td>{requerimiento.estado}</td>
+                <td>{requerimiento.ubicacion.nombre}</td>
+                <td>
+                  {requerimiento.asignado_a === undefined ? (
+                    '—'
+                  ) : (
+                    <a href={conBase(`/recurso/${requerimiento.asignado_a}`)}>
+                      {requerimiento.asignado_a}
+                    </a>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    <h2 style="margin-top:2rem">Zonas y cortes</h2>
+    {zonasGeo.length === 0 ? (
+      <p>No hay zonas publicadas.</p>
+    ) : (
+      <ul style="display:grid;gap:.5rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,18rem),1fr));list-style:none;padding:0">
+        {zonasGeo.map((zona) => (
+          <li class="tarjeta">
+            <h3 style="margin:0">{zona.nombre}</h3>
+            <p class="frescura" style="margin:0">
+              {zona.tipo} · {zona.geometria.tipo}
+            </p>
+            {zona.descripcion !== '' && <p style="margin:0">{zona.descripcion}</p>}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</Base>

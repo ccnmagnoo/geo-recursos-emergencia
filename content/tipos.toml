@@ -1,0 +1,736 @@
+# Catálogo de tipos de recurso.
+#
+# Agregar un tipo nuevo no requiere tocar código: define aquí el color, la
+# forma (para no depender solo del color), el símbolo y los campos de detalle.
+# Los campos declarados aquí se validan y generan el formulario del panel.
+
+# --- Recursos móviles -------------------------------------------------------
+
+[[tipos]]
+id = "torre_iluminacion"
+etiqueta = "Torre de iluminación"
+etiqueta_plural = "Torres de iluminación"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#b45309"
+forma = "circulo"
+simbolo = "TI"
+orden = 10
+descripcion = "Torre móvil con focos LED para iluminar un sector."
+
+[[tipos.campos]]
+clave = "autonomia_horas"
+etiqueta = "Autonomía"
+tipo = "entero"
+unidad = "h"
+min = 0
+max = 200
+requerido = true
+
+[[tipos.campos]]
+clave = "combustible_pct"
+etiqueta = "Combustible"
+tipo = "entero"
+unidad = "%"
+min = 0
+max = 100
+
+[[tipos.campos]]
+clave = "potencia_w"
+etiqueta = "Potencia"
+tipo = "entero"
+unidad = "W"
+min = 0
+
+[[tipos]]
+id = "generador"
+etiqueta = "Generador eléctrico"
+etiqueta_plural = "Generadores eléctricos"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#374151"
+forma = "cuadrado"
+simbolo = "GE"
+orden = 20
+descripcion = "Generador diésel o bencinero para alimentar un punto."
+
+[[tipos.campos]]
+clave = "potencia_kw"
+etiqueta = "Potencia"
+tipo = "decimal"
+unidad = "kW"
+min = 0
+requerido = true
+
+[[tipos.campos]]
+clave = "combustible_pct"
+etiqueta = "Combustible"
+tipo = "entero"
+unidad = "%"
+min = 0
+max = 100
+
+[[tipos.campos]]
+clave = "horas_uso"
+etiqueta = "Horas de uso"
+tipo = "entero"
+unidad = "h"
+min = 0
+
+[[tipos]]
+id = "bano_quimico"
+etiqueta = "Baño químico"
+etiqueta_plural = "Baños químicos"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#0e7490"
+forma = "rombo"
+simbolo = "BQ"
+orden = 30
+descripcion = "Baño químico móvil, individual o en batería."
+
+[[tipos.campos]]
+clave = "unidades"
+etiqueta = "Unidades"
+tipo = "entero"
+min = 1
+max = 200
+requerido = true
+
+[[tipos.campos]]
+clave = "accesible"
+etiqueta = "Unidad accesible"
+tipo = "booleano"
+
+[[tipos]]
+id = "ducha_movil"
+etiqueta = "Ducha móvil"
+etiqueta_plural = "Duchas móviles"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#0f766e"
+forma = "rombo"
+simbolo = "DM"
+orden = 40
+
+[[tipos.campos]]
+clave = "unidades"
+etiqueta = "Unidades"
+tipo = "entero"
+min = 1
+max = 100
+requerido = true
+
+[[tipos.campos]]
+clave = "agua_litros"
+etiqueta = "Agua disponible"
+tipo = "entero"
+unidad = "L"
+min = 0
+
+[[tipos]]
+id = "estanque_agua"
+etiqueta = "Estanque de agua"
+etiqueta_plural = "Estanques de agua"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#1d4ed8"
+forma = "circulo"
+simbolo = "EA"
+orden = 50
+
+[[tipos.campos]]
+clave = "capacidad_litros"
+etiqueta = "Capacidad"
+tipo = "entero"
+unidad = "L"
+min = 1
+requerido = true
+
+[[tipos.campos]]
+clave = "nivel_pct"
+etiqueta = "Nivel actual"
+tipo = "entero"
+unidad = "%"
+min = 0
+max = 100
+
+[[tipos]]
+id = "camion_aljibe"
+etiqueta = "Camión aljibe"
+etiqueta_plural = "Camiones aljibe"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#1e40af"
+forma = "cuadrado"
+simbolo = "CA"
+orden = 60
+
+[[tipos.campos]]
+clave = "capacidad_litros"
+etiqueta = "Capacidad"
+tipo = "entero"
+unidad = "L"
+min = 1
+requerido = true
+
+[[tipos.campos]]
+clave = "nivel_pct"
+etiqueta = "Nivel actual"
+tipo = "entero"
+unidad = "%"
+min = 0
+max = 100
+
+[[tipos]]
+id = "cocina_campana"
+etiqueta = "Cocina de campaña"
+etiqueta_plural = "Cocinas de campaña"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#c2410c"
+forma = "triangulo"
+simbolo = "CC"
+orden = 70
+
+[[tipos.campos]]
+clave = "raciones_por_hora"
+etiqueta = "Raciones por hora"
+tipo = "entero"
+min = 1
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario de servicio"
+tipo = "texto"
+requerido = true
+
+[[tipos]]
+id = "puesto_medico_movil"
+etiqueta = "Puesto médico móvil"
+etiqueta_plural = "Puestos médicos móviles"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#b91c1c"
+forma = "hexagono"
+simbolo = "PM"
+orden = 80
+
+[[tipos.campos]]
+clave = "capacidad_pacientes"
+etiqueta = "Capacidad de pacientes"
+tipo = "entero"
+min = 1
+
+[[tipos.campos]]
+clave = "especialidades"
+etiqueta = "Prestaciones"
+tipo = "texto"
+
+[[tipos]]
+id = "ambulancia"
+etiqueta = "Ambulancia"
+etiqueta_plural = "Ambulancias"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#9d174d"
+forma = "estrella"
+simbolo = "AM"
+orden = 90
+
+[[tipos.campos]]
+clave = "tripulacion"
+etiqueta = "Tripulación"
+tipo = "entero"
+min = 1
+max = 10
+
+[[tipos.campos]]
+clave = "traslados_realizados"
+etiqueta = "Traslados realizados"
+tipo = "entero"
+min = 0
+
+[[tipos]]
+id = "modulo_comunicaciones"
+etiqueta = "Módulo de comunicaciones"
+etiqueta_plural = "Módulos de comunicaciones"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#6d28d9"
+forma = "hexagono"
+simbolo = "MC"
+orden = 100
+
+[[tipos.campos]]
+clave = "tecnologia"
+etiqueta = "Tecnología"
+tipo = "opcion"
+opciones = ["wifi", "satelital", "radio", "mixta"]
+requerido = true
+
+[[tipos.campos]]
+clave = "usuarios_simultaneos"
+etiqueta = "Usuarios simultáneos"
+tipo = "entero"
+min = 0
+
+[[tipos]]
+id = "carga_dispositivos"
+etiqueta = "Punto de carga"
+etiqueta_plural = "Puntos de carga de dispositivos"
+categoria = "movil"
+movil = true
+geometrias = ["punto"]
+color = "#7c3aed"
+forma = "estrella"
+simbolo = "CD"
+orden = 110
+
+[[tipos.campos]]
+clave = "puntos_carga"
+etiqueta = "Puntos de carga"
+tipo = "entero"
+min = 1
+requerido = true
+
+[[tipos.campos]]
+clave = "energia"
+etiqueta = "Fuente de energía"
+tipo = "opcion"
+opciones = ["solar", "generador", "red"]
+
+# --- Puntos fijos de servicio ----------------------------------------------
+
+[[tipos]]
+id = "agua_potable"
+etiqueta = "Punto de agua potable"
+etiqueta_plural = "Puntos de agua potable"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#1d4ed8"
+forma = "circulo"
+simbolo = "AP"
+orden = 200
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+requerido = true
+
+[[tipos.campos]]
+clave = "litros_disponibles"
+etiqueta = "Litros disponibles"
+tipo = "entero"
+unidad = "L"
+min = 0
+
+[[tipos.campos]]
+clave = "requiere_envase"
+etiqueta = "Hay que llevar envase"
+tipo = "booleano"
+
+[[tipos]]
+id = "banos_duchas"
+etiqueta = "Baños y duchas"
+etiqueta_plural = "Baños y duchas fijos"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#0e7490"
+forma = "rombo"
+simbolo = "BD"
+orden = 210
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+requerido = true
+
+[[tipos.campos]]
+clave = "unidades"
+etiqueta = "Unidades"
+tipo = "entero"
+min = 1
+
+[[tipos.campos]]
+clave = "accesible"
+etiqueta = "Accesible"
+tipo = "booleano"
+
+[[tipos]]
+id = "alimentacion"
+etiqueta = "Punto de alimentación"
+etiqueta_plural = "Puntos de alimentación"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#c2410c"
+forma = "triangulo"
+simbolo = "AL"
+orden = 220
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario de comidas"
+tipo = "texto"
+requerido = true
+
+[[tipos.campos]]
+clave = "raciones"
+etiqueta = "Raciones estimadas"
+tipo = "entero"
+min = 0
+
+[[tipos.campos]]
+clave = "tipo_comida"
+etiqueta = "Tipo de comida"
+tipo = "opcion"
+opciones = ["desayuno", "almuerzo", "cena", "colacion", "todo el día"]
+
+[[tipos]]
+id = "asistencia_medica"
+etiqueta = "Asistencia médica"
+etiqueta_plural = "Puntos de asistencia médica"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#b91c1c"
+forma = "hexagono"
+simbolo = "AS"
+orden = 230
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+requerido = true
+
+[[tipos.campos]]
+clave = "servicios"
+etiqueta = "Servicios disponibles"
+tipo = "texto"
+
+[[tipos]]
+id = "albergue"
+etiqueta = "Albergue"
+etiqueta_plural = "Albergues"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#15803d"
+forma = "cuadrado"
+simbolo = "AB"
+orden = 240
+
+[[tipos.campos]]
+clave = "capacidad"
+etiqueta = "Capacidad"
+tipo = "entero"
+min = 1
+requerido = true
+
+[[tipos.campos]]
+clave = "ocupacion"
+etiqueta = "Ocupación actual"
+tipo = "entero"
+min = 0
+
+[[tipos.campos]]
+clave = "admite_mascotas"
+etiqueta = "Admite mascotas"
+tipo = "booleano"
+
+[[tipos.campos]]
+clave = "accesible"
+etiqueta = "Accesible"
+tipo = "booleano"
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario de ingreso"
+tipo = "texto"
+
+[[tipos]]
+id = "centro_acopio"
+etiqueta = "Centro de acopio"
+etiqueta_plural = "Centros de acopio"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#b45309"
+forma = "estrella"
+simbolo = "AC"
+orden = 250
+
+[[tipos.campos]]
+clave = "necesita"
+etiqueta = "Qué se necesita"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "no_necesita"
+etiqueta = "Qué NO se necesita"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario de recepción"
+tipo = "texto"
+requerido = true
+
+[[tipos]]
+id = "zona_segura"
+etiqueta = "Zona segura"
+etiqueta_plural = "Zonas seguras"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#15803d"
+forma = "circulo"
+simbolo = "ZS"
+orden = 260
+
+[[tipos.campos]]
+clave = "capacidad"
+etiqueta = "Capacidad estimada"
+tipo = "entero"
+min = 0
+
+[[tipos.campos]]
+clave = "punto_encuentro"
+etiqueta = "Es punto de encuentro"
+tipo = "booleano"
+
+[[tipos]]
+id = "punto_informacion"
+etiqueta = "Punto de información"
+etiqueta_plural = "Puntos de información"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#4b5563"
+forma = "cuadrado"
+simbolo = "PI"
+orden = 270
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+requerido = true
+
+[[tipos.campos]]
+clave = "servicios"
+etiqueta = "Servicios"
+tipo = "texto"
+
+[[tipos]]
+id = "veterinaria_animales"
+etiqueta = "Atención de animales"
+etiqueta_plural = "Atención y resguardo de animales"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#3f6212"
+forma = "rombo"
+simbolo = "VA"
+orden = 280
+
+[[tipos.campos]]
+clave = "atiende"
+etiqueta = "Qué atiende"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "capacidad_animales"
+etiqueta = "Capacidad de animales"
+tipo = "entero"
+min = 0
+
+[[tipos.campos]]
+clave = "necesita"
+etiqueta = "Insumos que necesita"
+tipo = "texto"
+
+[[tipos]]
+id = "combustible"
+etiqueta = "Combustible"
+etiqueta_plural = "Puntos de combustible"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#78350f"
+forma = "triangulo"
+simbolo = "CO"
+orden = 290
+
+[[tipos.campos]]
+clave = "tipo_combustible"
+etiqueta = "Tipo de combustible"
+tipo = "opcion"
+opciones = ["diésel", "bencina", "parafina", "mixto"]
+requerido = true
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "fila_estimada_min"
+etiqueta = "Espera estimada"
+tipo = "entero"
+unidad = "min"
+min = 0
+
+[[tipos]]
+id = "puesto_mando"
+etiqueta = "Puesto de mando"
+etiqueta_plural = "Puestos de mando"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#334155"
+forma = "hexagono"
+simbolo = "PC"
+orden = 300
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "coordina_con"
+etiqueta = "Coordina con"
+tipo = "texto"
+
+[[tipos]]
+id = "helipuerto"
+etiqueta = "Helipuerto"
+etiqueta_plural = "Helipuertos"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#0e7490"
+forma = "estrella"
+simbolo = "HE"
+orden = 310
+
+[[tipos.campos]]
+clave = "operativo_nocturno"
+etiqueta = "Operativo de noche"
+tipo = "booleano"
+
+[[tipos.campos]]
+clave = "dimensiones"
+etiqueta = "Dimensiones"
+tipo = "texto"
+
+[[tipos]]
+id = "ropa_abrigo"
+etiqueta = "Ropa y abrigo"
+etiqueta_plural = "Entrega de ropa y abrigo"
+categoria = "fijo"
+geometrias = ["punto"]
+color = "#9d174d"
+forma = "cuadrado"
+simbolo = "RA"
+orden = 320
+
+[[tipos.campos]]
+clave = "necesita"
+etiqueta = "Qué se necesita"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "horario"
+etiqueta = "Horario"
+tipo = "texto"
+requerido = true
+
+# --- Zonas y rutas ----------------------------------------------------------
+
+[[tipos]]
+id = "ruta_evacuacion"
+etiqueta = "Ruta de evacuación"
+etiqueta_plural = "Rutas de evacuación"
+categoria = "zona"
+geometrias = ["linea"]
+color = "#15803d"
+forma = "hexagono"
+simbolo = "RE"
+orden = 400
+
+[[tipos.campos]]
+clave = "sentido"
+etiqueta = "Sentido"
+tipo = "texto"
+
+[[tipos.campos]]
+clave = "estado_via"
+etiqueta = "Estado de la vía"
+tipo = "opcion"
+opciones = ["transitable", "solo 4x4", "cortada"]
+requerido = true
+
+[[tipos]]
+id = "corte_vial"
+etiqueta = "Corte de vía"
+etiqueta_plural = "Cortes de vía"
+categoria = "zona"
+geometrias = ["punto", "linea"]
+color = "#b91c1c"
+forma = "triangulo"
+simbolo = "CV"
+orden = 410
+
+[[tipos.campos]]
+clave = "causa"
+etiqueta = "Causa"
+tipo = "texto"
+requerido = true
+
+[[tipos.campos]]
+clave = "desvio"
+etiqueta = "Desvío"
+tipo = "texto"
+
+[[tipos]]
+id = "zona_riesgo"
+etiqueta = "Zona de riesgo"
+etiqueta_plural = "Zonas de riesgo"
+categoria = "zona"
+geometrias = ["poligono"]
+color = "#7f1d1d"
+forma = "cuadrado"
+simbolo = "ZR"
+orden = 420
+
+[[tipos.campos]]
+clave = "nivel"
+etiqueta = "Nivel de riesgo"
+tipo = "opcion"
+opciones = ["bajo", "medio", "alto", "extremo"]
+requerido = true
+
+[[tipos.campos]]
+clave = "instruccion"
+etiqueta = "Instrucción para la población"
+tipo = "texto"
+
+# --- Requerimientos ---------------------------------------------------------
+
+[[tipos]]
+id = "requerimiento"
+etiqueta = "Requerimiento"
+etiqueta_plural = "Requerimientos"
+categoria = "requerimiento"
+geometrias = ["punto"]
+color = "#6d28d9"
+forma = "circulo"
+simbolo = "RQ"
+orden = 500
+descripcion = "Punto donde se necesita un recurso que todavía no está cubierto."

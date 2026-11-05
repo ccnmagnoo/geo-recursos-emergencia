@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import AlertasVigentes from '../components/AlertasVigentes.astro';
+import Mapa from '../components/Mapa.astro';
+import {
+  alertasCriticas,
+  recursos,
+  site,
+  tipoDe,
+  tipos,
+  trasladosProximos,
+  zonasGeo,
+  zonasVisibles,
+} from '../lib/content';
+import { aVista } from '../lib/vista';
+
+const vistas = recursos.map((recurso) => aVista(recurso, tipoDe(recurso), site));
+const alertas = alertasCriticas();
+const traslados = trasladosProximos();
+---
+
+<Base
+  titulo={site.titulo}
+  descripcion={
+    site.subtitulo ?? 'Recursos de emergencia en el mapa, con estado y hora de actualización.'
+  }
+  tituloPropio
+>
+  <div class="envoltorio" style="padding-block:1rem">
+    <h1>{site.titulo}</h1>
+    {site.subtitulo && (
+      <p style="margin:0;color:var(--texto-suave);font-size:1.05rem">{site.subtitulo}</p>
+    )}
+  </div>
+
+  <div class="envoltorio" style="margin-bottom:1rem">
+    <AlertasVigentes alertas={alertas} traslados={traslados} />
+  </div>
+
+  <Mapa recursos={vistas} tipos={tipos} zonas={zonasVisibles} zonasGeo={zonasGeo} site={site} />
+
+  <div class="envoltorio" style="padding-block:1rem">
+    <p class="frescura">
+      Cada ficha indica cuándo se actualizó. Si el dato supera {site.umbral_desactualizado_horas}{' '}
+      horas, el sitio lo advierte en vez de mostrarlo como vigente.
+    </p>
+  </div>
+</Base>

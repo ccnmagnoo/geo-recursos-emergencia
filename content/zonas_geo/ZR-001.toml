@@ -1,0 +1,23 @@
+id = "ZR-001"
+tipo = "zona_riesgo"
+nombre = "[ejemplo] Zona de riesgo — Ladera norte"
+descripcion = "Polígono preliminar del área con riesgo de avance del fuego."
+publicado = true
+ejemplo = true
+zona = "quebrada-seca"
+
+[detalles]
+nivel = "alto"
+instruccion = "No ingresar. Evacuar hacia el Estadio Municipal por Ruta 5 Norte."
+
+[geometria]
+tipo = "poligono"
+coordenadas = [
+  [-71.535, -33.038],
+  [-71.525, -33.038],
+  [-71.525, -33.045],
+  [-71.535, -33.045],
+]
+vigencia_desde = 2026-11-05T05:00:00-03:00
+vigencia_hasta = 2026-11-06T23:59:00-03:00
+fuente = "SENAPRED — informe preliminar"

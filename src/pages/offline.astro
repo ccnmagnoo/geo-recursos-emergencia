@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import { conBase } from '../lib/rutas';
+---
+
+<Base
+  titulo="Sin conexión"
+  descripcion="No hay conexión disponible. Abre la lista guardada de recursos."
+>
+  <div class="envoltorio" style="padding-block:2rem;max-width:40rem">
+    <h1>Sin conexión</h1>
+    <p>
+      No pudimos cargar esta página. Si ya visitaste el sitio antes, la lista de recursos y los
+      datos del mapa deberían estar guardados en tu teléfono.
+    </p>
+    <p class="ficha__acciones">
+      <a class="boton boton--grande" href={conBase('/lista')}>
+        Abrir la lista guardada
+      </a>
+      <a class="boton boton--secundario" href={conBase('/')}>
+        Reintentar
+      </a>
+    </p>
+    <p class="frescura">
+      La lista puede estar desactualizada. Cuando recuperes señal, recarga la página para ver el
+      estado más reciente.
+    </p>
+  </div>
+</Base>

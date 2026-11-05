@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { conBase } from '../lib/rutas';
+---
+
+<Base titulo="Página no encontrada" descripcion="La dirección no existe en este sitio.">
+  <div class="envoltorio" style="padding-block:2rem;max-width:40rem">
+    <h1>No encontramos esa página</h1>
+    <p>Puede que el enlace esté mal escrito o que el recurso ya no esté publicado.</p>
+    <p class="ficha__acciones">
+      <a class="boton boton--grande" href={conBase('/lista')}>
+        Ver todos los recursos
+      </a>
+      <a class="boton boton--secundario" href={conBase('/')}>
+        Ir al mapa
+      </a>
+    </p>
+  </div>
+</Base>

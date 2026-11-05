@@ -1,0 +1,31 @@
+id = "ALI-004"
+tipo = "alimentacion"
+nombre = "[ejemplo] Punto de alimentación — Plaza Las Palmas"
+institucion = "Municipalidad de Vista Verde / Ollas comunes"
+descripcion = "Almuerzo y cena para personas afectadas y voluntariado."
+publicado = true
+ejemplo = true
+estado_actual = "operativo"
+zona = "las-palmas"
+
+[detalles]
+horario = "Almuerzo 12:30 a 14:30 · Cena 19:00 a 21:00"
+raciones = 350
+tipo_comida = "todo el día"
+
+[ubicacion_actual]
+nombre = "Plaza Las Palmas"
+lat = -33.0453
+lng = -71.5236
+desde = 2026-11-04T12:00:00-03:00
+
+[[historial_estado]]
+fecha = 2026-11-04T12:00:00-03:00
+estado = "operativo"
+autor = "Operador F"
+nota = "Primer servicio con 200 raciones."
+
+[[observaciones]]
+fecha = 2026-11-05T13:05:00-03:00
+autor = "Operador F"
+texto = "Se sumaron dos cocinas; capacidad subió a 350 raciones."

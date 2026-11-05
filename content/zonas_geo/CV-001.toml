@@ -1,0 +1,20 @@
+id = "CV-001"
+tipo = "corte_vial"
+nombre = "[ejemplo] Corte de vía — Camino Quebrada Seca"
+descripcion = "Paso cerrado por árboles caídos y línea de fuego."
+publicado = true
+ejemplo = true
+zona = "quebrada-seca"
+
+[detalles]
+causa = "Árboles caídos sobre la calzada"
+desvio = "Desvío por Ruta 5 Norte, salida El Mirador"
+
+[geometria]
+tipo = "linea"
+coordenadas = [
+  [-71.5265, -33.0435],
+  [-71.5265, -33.049],
+]
+vigencia_desde = 2026-11-05T06:30:00-03:00
+fuente = "Carabineros de Vista Verde"

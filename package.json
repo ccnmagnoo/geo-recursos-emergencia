@@ -1,0 +1,53 @@
+{
+  "name": "geo-recursos-emergencia",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Mapa estático de recursos de emergencia con contenido en TOML",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "admin": "astro dev --open /admin",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "validate": "tsx scripts/validate-content.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "bundle:budget": "tsx scripts/check-budget.ts",
+    "verify": "npm run validate && npm run check && npm run lint && npm run test && npm run build && npm run bundle:budget",
+    "new": "tsx scripts/new-resource.ts",
+    "backup": "tsx scripts/export-backup.ts"
+  },
+  "dependencies": {
+    "astro": "^7.4.7",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "smol-toml": "^1.9.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
+    "@types/leaflet": "^1.9.22",
+    "@types/leaflet.markercluster": "^1.5.6",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^1.7.0",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-astro": "^1.1.2",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.1.0"
+  }
+}

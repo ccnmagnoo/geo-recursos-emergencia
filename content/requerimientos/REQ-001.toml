@@ -1,0 +1,18 @@
+id = "REQ-001"
+tipo_recurso = "bano_quimico"
+nombre = "[ejemplo] Faltan baños químicos en El Mirador"
+cantidad = 4
+prioridad = "alta"
+estado = "asignado"
+asignado_a = "BAN-001"
+zona = "el-mirador"
+fecha = 2026-11-05T10:00:00-03:00
+solicitado_por = "Delegada de la Junta de Vecinos El Mirador"
+notas = "Se necesitan al menos 2 unidades accesibles. Prioridad por uso familiar."
+publicado = true
+ejemplo = true
+
+[ubicacion]
+nombre = "Escuela El Mirador"
+lat = -33.0512
+lng = -71.51

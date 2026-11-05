@@ -1,0 +1,32 @@
+id = "AGU-014"
+tipo = "agua_potable"
+nombre = "[ejemplo] Punto de agua potable — Sede Vecinal El Mirador"
+institucion = "Municipalidad de Vista Verde / APR"
+descripcion = "Entrega de agua potable en bidones. Llevar envase propio."
+publicado = true
+ejemplo = true
+estado_actual = "operativo"
+zona = "el-mirador"
+
+[detalles]
+horario = "08:00 a 20:00"
+litros_disponibles = 4000
+requiere_envase = true
+
+[ubicacion_actual]
+nombre = "Sede Vecinal El Mirador"
+lat = -33.0498
+lng = -71.5142
+gmaps_url = "https://www.google.com/maps/place/-33.0498,-71.5142"
+desde = 2026-11-04T08:00:00-03:00
+
+[[historial_estado]]
+fecha = 2026-11-04T07:45:00-03:00
+estado = "operativo"
+autor = "Operador C"
+nota = "Apertura con estanque lleno."
+
+[[observaciones]]
+fecha = 2026-11-05T09:10:00-03:00
+autor = "Operador C"
+texto = "Quedan 4.000 L. Se espera camión aljibe a las 15:00."

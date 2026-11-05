@@ -1,0 +1,52 @@
+id = "BAN-001"
+tipo = "bano_quimico"
+nombre = "[ejemplo] Batería de baños químicos — Escuela El Mirador"
+institucion = "Municipalidad de Vista Verde"
+descripcion = "Seis unidades, una de ellas accesible, trasladadas desde la plaza."
+publicado = true
+ejemplo = true
+estado_actual = "operativo"
+zona = "el-mirador"
+
+[detalles]
+unidades = 6
+accesible = true
+
+[ubicacion_actual]
+nombre = "Escuela El Mirador"
+lat = -33.0512
+lng = -71.51
+desde = 2026-11-04T21:30:00-03:00
+
+[[historial_estado]]
+fecha = 2026-11-04T18:00:00-03:00
+estado = "operativo"
+autor = "Operador B"
+nota = "Instaladas en Plaza Las Palmas."
+
+[[historial_estado]]
+fecha = 2026-11-04T20:00:00-03:00
+estado = "en_traslado"
+autor = "Operador B"
+nota = "Traslado por humo en el sector."
+
+[[historial_estado]]
+fecha = 2026-11-04T21:30:00-03:00
+estado = "operativo"
+autor = "Operador B"
+nota = "Instaladas y habilitadas en la escuela."
+
+[[observaciones]]
+fecha = 2026-11-04T21:40:00-03:00
+autor = "Operador B"
+texto = "Falta reponer papel higiénico; se pidió al centro de acopio."
+
+[[traslados]]
+id = "T-0001"
+estado = "completado"
+motivo = "Seguridad: humo denso en Plaza Las Palmas"
+autor = "Operador B"
+fecha_estimada = 2026-11-04T20:30:00-03:00
+fecha_real = 2026-11-04T21:30:00-03:00
+origen = { nombre = "Plaza Las Palmas", lat = -33.04512, lng = -71.5231 }
+destino = { nombre = "Escuela El Mirador", lat = -33.0512, lng = -71.51 }

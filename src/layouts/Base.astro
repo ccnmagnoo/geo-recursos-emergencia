@@ -1,0 +1,161 @@
+---
+import '../styles/global.css';
+import { site, fechaPublicacion } from '../lib/content';
+import { conBase, archivoConBase, esActual } from '../lib/rutas';
+import { formatearAbsoluta } from '../lib/tiempo';
+
+interface Props {
+  titulo: string;
+  descripcion?: string;
+  /** Si es true, el título no lleva el nombre del sitio. */
+  tituloPropio?: boolean;
+}
+
+const { titulo, descripcion, tituloPropio = false } = Astro.props;
+
+const tituloCompleto = tituloPropio ? titulo : `${titulo} — ${site.titulo}`;
+const descripcionFinal =
+  descripcion ??
+  site.subtitulo ??
+  'Recursos de emergencia georreferenciados: estado, alertas y traslados.';
+
+const canonica = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
+
+const origenTeselas = (() => {
+  try {
+    return new URL(site.teselas.url).origin;
+  } catch {
+    return '';
+  }
+})();
+
+const csp = [
+  "default-src 'self'",
+  `img-src 'self' data: blob:${origenTeselas === '' ? '' : ` ${origenTeselas}`}`,
+  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self'",
+  "connect-src 'self'",
+  "font-src 'self'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+
+const enlaces = [
+  { ruta: '/', etiqueta: 'Mapa' },
+  { ruta: '/lista', etiqueta: 'Lista' },
+  { ruta: '/imprimir', etiqueta: 'Imprimir' },
+];
+---
+
+<!doctype html>
+<html lang="es-CL">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0b5cad" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcionFinal} />
+    <link rel="canonical" href={canonica.href} />
+    <link rel="manifest" href={archivoConBase('/manifest.webmanifest')} />
+    <link rel="icon" href={archivoConBase('/icono.svg')} type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CL" />
+    <meta property="og:site_name" content={site.titulo} />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcionFinal} />
+    <meta property="og:url" content={canonica.href} />
+    <meta name="twitter:card" content="summary" />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">
+      Saltar al contenido principal
+    </a>
+
+    <header class="encabezado">
+      <div class="envoltorio encabezado__barra">
+        <a class="encabezado__marca" href={conBase('/')}>
+          <span class="encabezado__titulo">{site.titulo}</span>
+          <span class="encabezado__institucion">{site.institucion}</span>
+        </a>
+        <nav class="nav" aria-label="Navegación principal">
+          {enlaces.map((enlace) => (
+            <a
+              href={conBase(enlace.ruta)}
+              aria-current={esActual(Astro.url.pathname, enlace.ruta) ? 'page' : undefined}
+            >
+              {enlace.etiqueta}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+
+    {site.aviso && (
+      <div class="aviso-global" role="note">
+        <div class="envoltorio">{site.aviso}</div>
+      </div>
+    )}
+
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+
+    <footer class="pie">
+      <div class="envoltorio">
+        <div class="pie__bloques">
+          <div>
+            <h2>{site.titulo}</h2>
+            <p>{site.institucion}</p>
+            <p>{site.contacto}</p>
+          </div>
+          <div>
+            <h2>Emergencias</h2>
+            <ul>
+              {site.emergencias.map((emergencia) => (
+                <li>
+                  <a href={`tel:${emergencia.telefono}`}>
+                    {emergencia.nombre}: {emergencia.telefono}
+                  </a>
+                  {emergencia.descripcion && (
+                    <span class="frescura"> — {emergencia.descripcion}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h2>Datos</h2>
+            <ul>
+              <li>
+                <a href={archivoConBase('/data/recursos.json')}>Datos abiertos (JSON)</a>
+              </li>
+              <li>
+                <a href={archivoConBase('/data/recursos.geojson')}>GeoJSON</a>
+              </li>
+              <li>
+                <a href={conBase('/lista')}>Lista sin mapa</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <p style="margin-top: 1rem">
+          Última publicación:{' '}
+          <time datetime={fechaPublicacion}>{formatearAbsoluta(fechaPublicacion)}</time>.
+          Información operativa sujeta a cambios; cada ficha indica su propia hora de actualización.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      import '../scripts/pwa';
+      import '../scripts/frescura';
+      import '../scripts/acciones';
+    </script>
+  </body>
+</html>
