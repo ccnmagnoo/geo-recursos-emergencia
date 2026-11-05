@@ -17,7 +17,7 @@ potencia_w = 2400
 nombre = "Plaza Las Palmas"
 lat = -33.04512
 lng = -71.5231
-gmaps_url = "https://maps.app.goo.gl/EjemploNoResoluble"
+gmaps_url = "https://www.google.com/maps/place/-33.04512,-71.5231"
 desde = 2026-11-05T14:00:00-03:00
 
 [[historial_estado]]
@@ -58,7 +58,7 @@ motivo = "Seguridad: avance del frente de fuego"
 autor = "Operador A"
 fecha_estimada = 2026-11-06T09:00:00-03:00
 origen = { nombre = "Plaza Las Palmas", lat = -33.04512, lng = -71.5231 }
-destino = { nombre = "Estadio Municipal", lat = -33.0512, lng = -71.51, gmaps_url = "https://maps.app.goo.gl/EjemploEstadio" }
+destino = { nombre = "Estadio Municipal", lat = -33.0512, lng = -71.51, gmaps_url = "https://www.google.com/maps/place/-33.0512,-71.51" }
 
 [[correcciones]]
 corrige = "historial_estado:2026-11-05T14:05:00-03:00"

@@ -314,7 +314,9 @@ export const Site = z.strictObject({
     zoom: z.number().int().min(3).max(19),
   }),
   teselas: z.strictObject({
-    url: z.url(),
+    url: z
+      .url()
+      .refine((value) => value.startsWith('https://'), 'Las teselas deben servirse por https://'),
     atribucion: z.string().min(1).max(500),
     atribucion_url: UrlHttps.optional(),
     max_zoom: z.number().int().min(1).max(22).default(19),

@@ -85,6 +85,11 @@ El panel funciona así:
   GitHub no está implementada en esta versión. Está documentada como próximo paso en
   [`docs/DECISIONES.md`](docs/DECISIONES.md).
 
+El servidor escucha solo en `127.0.0.1`. Para probar en un celular de la misma red:
+`npx astro dev --host` (solo en una red de confianza, porque el panel escribe archivos). Los
+endpoints verifican tipo de contenido y origen, pero no hay autenticación: es una herramienta
+personal, no multiusuario.
+
 ## Publicar
 
 El sitio es 100 % estático. La ruta base y la URL canónica se configuran con variables de entorno

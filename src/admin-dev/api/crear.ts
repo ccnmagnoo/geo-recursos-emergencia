@@ -1,6 +1,13 @@
 import type { APIRoute } from 'astro';
 
-import { json, rutaRecurso, soloDev, validarContenido, escribirAtomico } from '../lib/archivos';
+import {
+  escribirAtomico,
+  json,
+  rutaRecurso,
+  soloDev,
+  validarContenido,
+  verificarSolicitud,
+} from '../lib/archivos';
 import { parsearLinkGmaps } from '../../lib/gmaps';
 import { ahoraIsoChile } from '../../lib/tiempo';
 import { cita, valorToml } from '../../lib/toml-write';
@@ -58,6 +65,8 @@ function coercionar(campo: CampoExtraT, bruto: unknown): string | number | boole
 export const POST: APIRoute = async ({ request }) => {
   const bloqueo = soloDev();
   if (bloqueo !== null) return bloqueo;
+  const invalido = verificarSolicitud(request);
+  if (invalido !== null) return invalido;
 
   let cuerpo: Entrada;
   try {

@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { recursos, site, tipoDe, zonas } from '../lib/content';
+import { fechaPublicacion, recursos, site, tipoDe, zonas } from '../lib/content';
 import { alertasVigentesDe, etiquetaEstado, ultimaActualizacion } from '../lib/recurso';
 import { formatearAbsoluta } from '../lib/tiempo';
 
@@ -22,8 +22,8 @@ const filas = recursos.map((recurso) => ({
       {site.institucion} · {site.contacto}
     </p>
     <p>
-      Publicado:{' '}
-      <time datetime={new Date().toISOString()}>{formatearAbsoluta(new Date().toISOString())}</time>
+      Última publicación del sitio:{' '}
+      <time datetime={fechaPublicacion}>{formatearAbsoluta(fechaPublicacion)}</time>
     </p>
     <p>
       Teléfonos de emergencia:
@@ -35,7 +35,7 @@ const filas = recursos.map((recurso) => ({
     <div class="tabla-envoltorio" style="margin-top:1rem">
       <table>
         <caption>
-          {filas.length}recursos. Cada fila incluye coordenadas para dictarlas por teléfono.
+          {`${filas.length} recursos. Cada fila incluye coordenadas para dictarlas por teléfono.`}
         </caption>
         <thead>
           <tr>

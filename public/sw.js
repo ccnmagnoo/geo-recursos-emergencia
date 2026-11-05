@@ -108,7 +108,9 @@ self.addEventListener('fetch', (evento) => {
   const mismoOrigen = url.origin === self.location.origin;
 
   if (!mismoOrigen) {
-    if (request.destination === 'image') {
+    // Solo teselas: no cacheamos cualquier imagen de terceros.
+    const esTesela = /\/\d+\/\d+\/\d+\.(png|jpe?g|webp)$/i.test(url.pathname);
+    if (request.destination === 'image' && esTesela) {
       evento.respondWith(tesela(request));
     }
     return;

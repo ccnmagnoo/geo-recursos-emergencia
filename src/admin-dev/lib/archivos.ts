@@ -82,6 +82,7 @@ export async function escribirAtomico(ruta: string, texto: string): Promise<void
 export async function deshacerRecurso(
   id: string,
 ): Promise<{ restaurado: boolean; desde?: string }> {
+  if (!/^[A-Z]{2,4}-\d{3,4}$/.test(id)) return { restaurado: false };
   const carpeta = join(RAIZ, '.backup');
   if (!existsSync(carpeta)) return { restaurado: false };
 
@@ -111,4 +112,29 @@ export function json(datos: unknown, estado = 200): Response {
 export function soloDev(): Response | null {
   if (import.meta.env.DEV) return null;
   return json({ ok: false, error: 'El panel solo existe en desarrollo.' }, 404);
+}
+
+/**
+ * El panel no tiene autenticación: se protege con el binding a localhost, la
+ * comprobación de origen y el tipo de contenido. No es un sistema multiusuario.
+ */
+export function verificarSolicitud(request: Request, requiereJson = true): Response | null {
+  if (requiereJson) {
+    const tipo = request.headers.get('content-type') ?? '';
+    if (!tipo.includes('application/json')) {
+      return json({ ok: false, error: 'Se espera Content-Type: application/json.' }, 415);
+    }
+  }
+
+  const origen = request.headers.get('origin');
+  if (origen !== null && origen !== new URL(request.url).origin) {
+    return json({ ok: false, error: 'Origen no permitido.' }, 403);
+  }
+
+  const sitio = request.headers.get('sec-fetch-site');
+  if (sitio !== null && sitio !== 'same-origin' && sitio !== 'none') {
+    return json({ ok: false, error: 'Solicitud cruzada bloqueada.' }, 403);
+  }
+
+  return null;
 }

@@ -21,15 +21,19 @@ async function main(): Promise<number> {
 
   try {
     if (process.platform === 'win32') {
+      // Las rutas van por variables de entorno para no interpolar texto en PowerShell.
       execFileSync(
         'powershell',
         [
           '-NoProfile',
           '-NonInteractive',
           '-Command',
-          `Compress-Archive -Path "${content}" -DestinationPath "${destino}" -Force`,
+          'Compress-Archive -LiteralPath $env:BACKUP_SRC -DestinationPath $env:BACKUP_DST -Force',
         ],
-        { stdio: 'inherit' },
+        {
+          stdio: 'inherit',
+          env: { ...process.env, BACKUP_SRC: content, BACKUP_DST: destino },
+        },
       );
     } else {
       execFileSync('zip', ['-r', '-q', destino, 'content'], {

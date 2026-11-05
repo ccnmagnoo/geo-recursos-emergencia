@@ -2,7 +2,15 @@
 import Base from '../layouts/Base.astro';
 import BadgeEstado from '../components/BadgeEstado.astro';
 import AvisoFrescura from '../components/AvisoFrescura.astro';
-import { recursos, site, tipoDe, zonas, requerimientos, zonasGeo } from '../lib/content';
+import {
+  recursos,
+  site,
+  tipoDe,
+  zonas,
+  requerimientos,
+  zonasGeo,
+  tiposPorId,
+} from '../lib/content';
 import { conBase } from '../lib/rutas';
 import { detallesLegibles, ultimaActualizacion } from '../lib/recurso';
 import { urlComoLlegar } from '../lib/url';
@@ -29,6 +37,25 @@ const filas = recursos.map((recurso) => {
 const requerimientosVisibles = requerimientos.filter(
   (requerimiento) => requerimiento.estado !== 'cubierto',
 );
+
+const prioridadLegible: Record<string, string> = {
+  baja: 'Baja',
+  media: 'Media',
+  alta: 'Alta',
+  critica: 'Crítica',
+};
+
+const estadoRequerimientoLegible: Record<string, string> = {
+  abierto: 'Abierto',
+  asignado: 'Asignado',
+  cubierto: 'Cubierto',
+};
+
+const geometriaLegible: Record<string, string> = {
+  punto: 'Punto',
+  linea: 'Línea',
+  poligono: 'Polígono',
+};
 ---
 
 <Base
@@ -50,10 +77,16 @@ const requerimientosVisibles = requerimientos.filter(
       </a>
     </p>
 
-    <div class="tabla-envoltorio" style="margin-top:1rem">
+    <div
+      class="tabla-envoltorio"
+      style="margin-top:1rem"
+      role="region"
+      aria-label="Tabla de recursos publicados, desplazable horizontalmente"
+      tabindex="0"
+    >
       <table>
         <caption>
-          {filas.length}recursos publicados · umbral de desactualización:
+          {`${filas.length} recursos publicados`}· umbral de desactualización:
           {site.umbral_desactualizado_horas}h
         </caption>
         <thead>
@@ -64,7 +97,9 @@ const requerimientosVisibles = requerimientos.filter(
             <th scope="col">Ubicación</th>
             <th scope="col">Zona</th>
             <th scope="col">Actualizado</th>
-            <th scope="col">Acciones</th>
+            <th scope="col" class="no-imprimir">
+              Acciones
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -98,6 +133,9 @@ const requerimientosVisibles = requerimientos.filter(
                   rel="noopener noreferrer"
                 >
                   Cómo llegar
+                  <span class="solo-lector">
+                    a {recurso.ubicacion_actual.nombre} (se abre en una pestaña nueva)
+                  </span>
                 </a>
               </td>
             </tr>
@@ -110,7 +148,12 @@ const requerimientosVisibles = requerimientos.filter(
     {requerimientosVisibles.length === 0 ? (
       <p>No hay requerimientos abiertos publicados.</p>
     ) : (
-      <div class="tabla-envoltorio">
+      <div
+        class="tabla-envoltorio"
+        role="region"
+        aria-label="Tabla de requerimientos, desplazable horizontalmente"
+        tabindex="0"
+      >
         <table>
           <caption>Pedidos de recursos que aún no están cubiertos del todo.</caption>
           <thead>
@@ -128,8 +171,8 @@ const requerimientosVisibles = requerimientos.filter(
               <tr>
                 <th scope="row">{requerimiento.nombre}</th>
                 <td>{requerimiento.cantidad}</td>
-                <td>{requerimiento.prioridad}</td>
-                <td>{requerimiento.estado}</td>
+                <td>{prioridadLegible[requerimiento.prioridad] ?? requerimiento.prioridad}</td>
+                <td>{estadoRequerimientoLegible[requerimiento.estado] ?? requerimiento.estado}</td>
                 <td>{requerimiento.ubicacion.nombre}</td>
                 <td>
                   {requerimiento.asignado_a === undefined ? (
@@ -156,7 +199,8 @@ const requerimientosVisibles = requerimientos.filter(
           <li class="tarjeta">
             <h3 style="margin:0">{zona.nombre}</h3>
             <p class="frescura" style="margin:0">
-              {zona.tipo} · {zona.geometria.tipo}
+              {tiposPorId.get(zona.tipo)?.etiqueta ?? zona.tipo} ·{' '}
+              {geometriaLegible[zona.geometria.tipo] ?? zona.geometria.tipo}
             </p>
             {zona.descripcion !== '' && <p style="margin:0">{zona.descripcion}</p>}
           </li>

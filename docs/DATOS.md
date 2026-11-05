@@ -12,6 +12,8 @@ Todo el contenido vive en `/content`. No hay base de datos. El build falla si al
 - **Historial append-only:** no se edita ni se borra un evento. Para corregir se agrega una
   corrección.
 - **Texto:** sin HTML. La interfaz escapa todo lo que viene del contenido.
+- **`autor`:** es trazabilidad operativa. Usa un rol o identificador de turno; no escribas datos
+  personales de afectados ni teléfonos en campos de texto libre. Ese contenido se publica.
 
 ## `content/site.toml`
 

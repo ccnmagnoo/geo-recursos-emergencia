@@ -86,7 +86,7 @@ const estados = [
       <a class="boton boton--secundario" href={conBase('/lista')}>
         Ver como lista
       </a>
-      <p class="mapa-barra__resultado" role="status" aria-live="polite" id="resultado-mapa">
+      <p class="mapa-barra__resultado" role="status" aria-atomic="true" id="resultado-mapa">
         {recursos.length} recursos
       </p>
     </div>
@@ -130,7 +130,7 @@ const estados = [
       </div>
 
       <div class="panel-filtros__grupo">
-        <h2>Tipo de recurso</h2>
+        <h3>Tipo de recurso</h3>
         <fieldset>
           <legend class="solo-lector">Filtrar por tipo de recurso</legend>
           {tiposConRecursos.map((tipo) => (

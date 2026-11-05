@@ -5,7 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 import type { RecursoVista } from '../lib/vista';
-import { formatearRelativa } from '../lib/tiempo';
+import { esDesactualizado, formatearAbsoluta, formatearRelativa } from '../lib/tiempo';
 
 /**
  * Isla del mapa. TypeScript vanilla: sin framework, sin HTML dinámico
@@ -55,10 +55,12 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
   const mapa = L.map(contenedor, {
     center: [datos.centro.lat, datos.centro.lng],
     zoom: datos.centro.zoom,
-    zoomControl: true,
+    zoomControl: false,
     keyboard: true,
     scrollWheelZoom: false,
   });
+
+  L.control.zoom({ zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' }).addTo(mapa);
 
   L.tileLayer(datos.teselas.url, {
     maxZoom: datos.teselas.maxZoom,
@@ -69,6 +71,28 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     showCoverageOnHover: false,
     maxClusterRadius: 52,
     chunkedLoading: true,
+    iconCreateFunction: (grupo) => {
+      const cantidad = grupo.getChildCount();
+      const tamano = cantidad < 10 ? 'small' : cantidad < 100 ? 'medium' : 'large';
+      const caja = crear('div', undefined, `marker-cluster marker-cluster-${tamano}`);
+      caja.setAttribute('role', 'button');
+      caja.tabIndex = 0;
+      caja.setAttribute('aria-label', `${cantidad} recursos en este sector. Activar para ampliar.`);
+      const interior = crear('div');
+      interior.append(crear('span', String(cantidad)));
+      caja.append(interior);
+      caja.addEventListener('keydown', (evento) => {
+        if (evento.key !== 'Enter' && evento.key !== ' ') return;
+        evento.preventDefault();
+        grupo.zoomToBounds({ padding: [24, 24] });
+      });
+      return L.divIcon({
+        html: caja,
+        className: 'marcador-cluster-envoltorio',
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
+      });
+    },
   });
   const grupoTrazos = L.layerGroup().addTo(mapa);
   const grupoPuntosTraslado = L.layerGroup().addTo(mapa);
@@ -124,17 +148,18 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
 
     if (recurso.futura !== undefined) {
       const futura = recurso.futura;
+      const contenido = crear('div');
+      contenido.append(crear('strong', futura.etiqueta));
+      contenido.append(crear('div', `${recurso.nombre} hacia ${futura.nombre}`));
+      if (futura.fecha !== undefined) {
+        contenido.append(crear('div', formatearAbsoluta(futura.fecha), 'frescura'));
+      }
       L.marker([futura.lat, futura.lng], {
         icon: icono(recurso, 'futuro'),
         keyboard: false,
         title: `${futura.etiqueta}: ${recurso.nombre}`,
       })
-        .bindTooltip(
-          `${futura.etiqueta}. ${recurso.nombre} hacia ${futura.nombre}${
-            futura.fecha === undefined ? '' : `, ${formatearRelativa(futura.fecha)}`
-          }`,
-          { direction: 'top' },
-        )
+        .bindTooltip(contenido, { direction: 'top' })
         .addTo(grupoPuntosTraslado);
     }
   }
@@ -222,7 +247,11 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
 
   if (dialogo instanceof HTMLDialogElement) {
     dialogo.addEventListener('close', () => {
-      ultimoDisparador?.focus();
+      if (ultimoDisparador?.isConnected === true) {
+        ultimoDisparador.focus();
+      } else {
+        document.getElementById('alternar-filtros')?.focus();
+      }
       const url = new URL(window.location.href);
       url.searchParams.delete('recurso');
       window.history.replaceState(null, '', url);
@@ -246,11 +275,19 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     estado.append(badge);
     encabezado.append(estado);
 
-    const frescura = crear('p', recurso.frescura.texto, 'frescura');
-    frescura.append(crear('time', ` · ${recurso.frescura.absoluta}`));
+    const frescura = crear('p', undefined, 'frescura');
+    frescura.dataset['fecha'] = recurso.frescura.fecha;
+    frescura.dataset['umbral'] = String(datos.umbralHoras);
+    const textoFrescura = crear('span', `Actualizado ${formatearRelativa(recurso.frescura.fecha)}`);
+    textoFrescura.dataset['frescuraTexto'] = '';
+    frescura.append(textoFrescura);
+    const hora = crear('time', ` · ${recurso.frescura.absoluta}`);
+    hora.dateTime = recurso.frescura.fecha;
+    frescura.append(hora);
     encabezado.append(frescura);
 
-    if (recurso.frescura.desactualizado) {
+    if (esDesactualizado(recurso.frescura.fecha, datos.umbralHoras)) {
+      frescura.classList.add('frescura--vencida');
       const aviso = crear('div', undefined, 'aviso aviso--critico');
       aviso.append(crear('p', 'Información desactualizada'));
       aviso.append(
@@ -330,9 +367,7 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
         item.append(crear('span', futura.etiqueta, 'traslado__etiqueta'));
         item.append(crear('div', futura.nombre));
         if (futura.fecha !== undefined) {
-          item.append(
-            crear('div', `Estimado: ${new Date(futura.fecha).toLocaleString('es-CL')}`, 'frescura'),
-          );
+          item.append(crear('div', `Estimado: ${formatearAbsoluta(futura.fecha)}`, 'frescura'));
         }
         if (futura.motivo !== '') item.append(crear('div', futura.motivo, 'frescura'));
         lista.append(item);

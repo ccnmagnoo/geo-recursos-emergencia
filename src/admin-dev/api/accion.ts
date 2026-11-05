@@ -9,6 +9,7 @@ import {
   rutaRecurso,
   soloDev,
   validarContenido,
+  verificarSolicitud,
 } from '../lib/archivos';
 import {
   agregarBloque,
@@ -81,6 +82,8 @@ function siguienteId(prefijo: 'A' | 'T', existentes: string[]): string {
 export const POST: APIRoute = async ({ request }) => {
   const bloqueo = soloDev();
   if (bloqueo !== null) return bloqueo;
+  const invalido = verificarSolicitud(request);
+  if (invalido !== null) return invalido;
 
   let cuerpo: Entrada;
   try {
@@ -91,7 +94,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const id = texto(cuerpo.id)?.toUpperCase() ?? '';
   const accion = texto(cuerpo.accion);
-  if (id === '' || accion === null) {
+  if (!/^[A-Z]{2,4}-\\d{3,4}$/.test(id) || accion === null) {
     return json({ ok: false, error: 'Falta el recurso o la acción.' }, 400);
   }
 

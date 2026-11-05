@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-import { json, soloDev } from '../lib/archivos';
+import { json, soloDev, verificarSolicitud } from '../lib/archivos';
 import { esEnlaceCorto, parsearLinkGmaps } from '../../lib/gmaps';
 
 export const prerender = false;
@@ -14,6 +14,8 @@ interface Entrada {
 export const POST: APIRoute = async ({ request }) => {
   const bloqueo = soloDev();
   if (bloqueo !== null) return bloqueo;
+  const invalido = verificarSolicitud(request);
+  if (invalido !== null) return invalido;
 
   let cuerpo: Entrada;
   try {

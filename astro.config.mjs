@@ -32,7 +32,9 @@ export default defineConfig({
     assets: '_assets',
   },
   server: {
-    host: true,
+    // Solo localhost: el panel escribe archivos y no tiene autenticación.
+    // Para probar en un celular de la misma red: npx astro dev --host
+    host: '127.0.0.1',
     port: 4321,
   },
   vite: {

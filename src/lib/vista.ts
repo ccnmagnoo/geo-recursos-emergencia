@@ -54,6 +54,7 @@ export interface RecursoVista {
   ubicacion: LugarVista;
   gmaps: string;
   frescura: {
+    fecha: string;
     texto: string;
     absoluta: string;
     desactualizado: boolean;
@@ -88,7 +89,11 @@ function lugar(nombre: string, lat: number, lng: number): LugarVista {
 
 export function aVista(recurso: RecursoT, tipo: TipoRecursoT, site: SiteT): RecursoVista {
   const derivado = derivarUbicaciones(recurso);
-  const frescura = etiquetaFrescura(ultimaActualizacion(recurso), site.umbral_desactualizado_horas);
+  const fechaDato = ultimaActualizacion(recurso);
+  const frescura = {
+    fecha: fechaDato,
+    ...etiquetaFrescura(fechaDato, site.umbral_desactualizado_horas),
+  };
   const llegada = urlComoLlegar(
     recurso.ubicacion_actual.gmaps_url,
     recurso.ubicacion_actual.lat,

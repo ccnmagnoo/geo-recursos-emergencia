@@ -8,6 +8,7 @@ import {
   rutaRecurso,
   soloDev,
   validarContenido,
+  verificarSolicitud,
 } from '../lib/archivos';
 
 export const prerender = false;
@@ -20,6 +21,8 @@ interface Entrada {
 export const POST: APIRoute = async ({ request }) => {
   const bloqueo = soloDev();
   if (bloqueo !== null) return bloqueo;
+  const invalido = verificarSolicitud(request);
+  if (invalido !== null) return invalido;
 
   let cuerpo: Entrada;
   try {
@@ -30,7 +33,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const id = typeof cuerpo.id === 'string' ? cuerpo.id.trim().toUpperCase() : '';
   const contenido = typeof cuerpo.contenido === 'string' ? cuerpo.contenido : null;
-  if (id === '' || contenido === null) {
+  if (!/^[A-Z]{2,4}-\\d{3,4}$/.test(id) || contenido === null) {
     return json({ ok: false, error: 'Faltan el id o el contenido TOML.' }, 400);
   }
 

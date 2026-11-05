@@ -1,5 +1,6 @@
 ---
 import type { AlertaDestacada, TrasladoDestacado } from '../lib/content';
+import { site } from '../lib/content';
 import { conBase } from '../lib/rutas';
 import { formatearAbsoluta, formatearRelativa } from '../lib/tiempo';
 
@@ -35,7 +36,16 @@ const severidadTexto = {
           <p style="margin:0;font-size:.85rem;font-weight:400">
             <a href={conBase(`/recurso/${recurso.id}`)}>{recurso.nombre}</a>
             {' · '}
-            <time datetime={alerta.fecha}>{formatearRelativa(alerta.fecha, ahora)}</time>
+            <span
+              data-frescura
+              data-fecha={alerta.fecha}
+              data-umbral={site.umbral_desactualizado_horas}
+              data-prefijo=""
+            >
+              <time datetime={alerta.fecha} data-frescura-texto>
+                {formatearRelativa(alerta.fecha, ahora)}
+              </time>
+            </span>
             {' · '}
             <span>{formatearAbsoluta(alerta.fecha)}</span>
           </p>

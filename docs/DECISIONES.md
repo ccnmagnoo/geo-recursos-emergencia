@@ -27,7 +27,9 @@ rutas **solo si `command === 'dev'`**.
 
 **Motivo:** en un sitio estático no se puede escribir en producción, y un panel publicado es
 superficie de ataque. Con la inyección condicional, `/admin` no existe en `dist/`; hay una prueba
-E2E y un chequeo en CI.
+E2E y un chequeo en CI. Además, el servidor escucha solo en `127.0.0.1` y cada endpoint valida
+`Content-Type` y `Origin` para bloquear CSRF; no hay autenticación, así que el panel es de uso
+personal en una máquina de confianza.
 
 ## D4 — Edición local vía `git push`, no edición en el navegador
 

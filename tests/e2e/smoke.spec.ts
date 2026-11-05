@@ -101,6 +101,21 @@ test.describe('artefacto estático', () => {
     expect(respuesta.status()).toBe(404);
   });
 
+  test('los endpoints de escritura no existen en producción', async ({ request }) => {
+    const crear = await request.post('/api/admin/crear', { data: {} });
+    expect(crear.status()).toBe(404);
+    const guardar = await request.post('/api/admin/guardar', { data: {} });
+    expect(guardar.status()).toBe(404);
+  });
+
+  test('la CSP publicada es la estricta', async ({ request }) => {
+    const html = await (await request.get('/')).text();
+    expect(html).toContain("script-src 'self'");
+    expect(html).not.toContain("script-src 'self' 'unsafe-inline'");
+    expect(html).not.toContain('ws:');
+    expect(html).toContain('https://tile.openstreetmap.org');
+  });
+
   test('los feeds JSON y GeoJSON son válidos', async ({ request }) => {
     const json = await request.get('/data/recursos.json');
     expect(json.ok()).toBeTruthy();

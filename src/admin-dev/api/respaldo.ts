@@ -3,15 +3,17 @@ import { promisify } from 'node:util';
 
 import type { APIRoute } from 'astro';
 
-import { json, soloDev } from '../lib/archivos';
+import { json, soloDev, verificarSolicitud } from '../lib/archivos';
 
 export const prerender = false;
 
 const ejecutar = promisify(execFile);
 
-export const POST: APIRoute = async () => {
+export const POST: APIRoute = async ({ request }) => {
   const bloqueo = soloDev();
   if (bloqueo !== null) return bloqueo;
+  const invalido = verificarSolicitud(request, false);
+  if (invalido !== null) return invalido;
 
   try {
     const comando = process.platform === 'win32' ? 'npm.cmd' : 'npm';
