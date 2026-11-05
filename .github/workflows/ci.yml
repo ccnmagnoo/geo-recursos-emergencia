@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    name: Validar, probar y construir
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validar contenido TOML
+        run: npm run validate
+
+      - name: Tipos y plantillas
+        run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Formato
+        run: npm run format:check
+
+      - name: Pruebas unitarias
+        run: npm run test
+
+      - name: Build estático
+        run: npm run build
+
+      - name: Verificar que /admin no se publique
+        run: |
+          set -e
+          if [ -d dist/admin ]; then
+            echo "::error::dist/admin existe: el panel se filtró al build."
+            exit 1
+          fi
+          if find dist -iname '*admin*' | grep -q .; then
+            echo "::error::Hay archivos con 'admin' en dist/."
+            find dist -iname '*admin*'
+            exit 1
+          fi
+          if grep -rl --include='*.html' 'api/admin' dist; then
+            echo "::error::El HTML publicado referencia endpoints de administración."
+            exit 1
+          fi
+
+      - name: Presupuesto de carga inicial
+        run: npm run bundle:budget
+
+      - name: Instalar navegador de pruebas
+        run: npx playwright install --with-deps chromium
+
+      - name: Pruebas end-to-end
+        run: npm run test:e2e
+
+      - name: Guardar artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitio-estatico
+          path: dist/
+          retention-days: 7
+
+      - name: Guardar reporte de Playwright si falla
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse móvil
+    runs-on: ubuntu-latest
+    needs: verificar
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true
