@@ -61,7 +61,7 @@ movil = true
 geometrias = ["punto"]         # punto | linea | poligono
 color = "#b45309"              # contraste >= 4.5:1 con texto blanco
 forma = "circulo"              # circulo | cuadrado | rombo | triangulo | hexagono | estrella
-simbolo = "TI"                 # 1-2 caracteres
+icono = "torre"                # id del set de src/lib/iconos.ts
 orden = 10
 descripcion = "Torre móvil con focos LED."   # opcional
 

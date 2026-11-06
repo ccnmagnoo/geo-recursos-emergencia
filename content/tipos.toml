@@ -15,7 +15,7 @@ movil = true
 geometrias = ["punto"]
 color = "#b45309"
 forma = "circulo"
-simbolo = "TI"
+icono = "torre"
 orden = 10
 descripcion = "Torre móvil con focos LED para iluminar un sector."
 
@@ -52,7 +52,7 @@ movil = true
 geometrias = ["punto"]
 color = "#374151"
 forma = "cuadrado"
-simbolo = "GE"
+icono = "generador"
 orden = 20
 descripcion = "Generador diésel o bencinero para alimentar un punto."
 
@@ -88,7 +88,7 @@ movil = true
 geometrias = ["punto"]
 color = "#0e7490"
 forma = "rombo"
-simbolo = "BQ"
+icono = "bano"
 orden = 30
 descripcion = "Baño químico móvil, individual o en batería."
 
@@ -114,7 +114,7 @@ movil = true
 geometrias = ["punto"]
 color = "#0f766e"
 forma = "rombo"
-simbolo = "DM"
+icono = "ducha"
 orden = 40
 
 [[tipos.campos]]
@@ -141,7 +141,7 @@ movil = true
 geometrias = ["punto"]
 color = "#1d4ed8"
 forma = "circulo"
-simbolo = "EA"
+icono = "estanque"
 orden = 50
 
 [[tipos.campos]]
@@ -169,7 +169,7 @@ movil = true
 geometrias = ["punto"]
 color = "#1e40af"
 forma = "cuadrado"
-simbolo = "CA"
+icono = "camion"
 orden = 60
 
 [[tipos.campos]]
@@ -197,7 +197,7 @@ movil = true
 geometrias = ["punto"]
 color = "#c2410c"
 forma = "triangulo"
-simbolo = "CC"
+icono = "cocina"
 orden = 70
 
 [[tipos.campos]]
@@ -221,7 +221,7 @@ movil = true
 geometrias = ["punto"]
 color = "#b91c1c"
 forma = "hexagono"
-simbolo = "PM"
+icono = "medico_movil"
 orden = 80
 
 [[tipos.campos]]
@@ -244,7 +244,7 @@ movil = true
 geometrias = ["punto"]
 color = "#9d174d"
 forma = "estrella"
-simbolo = "AM"
+icono = "ambulancia"
 orden = 90
 
 [[tipos.campos]]
@@ -269,7 +269,7 @@ movil = true
 geometrias = ["punto"]
 color = "#6d28d9"
 forma = "hexagono"
-simbolo = "MC"
+icono = "antena"
 orden = 100
 
 [[tipos.campos]]
@@ -294,7 +294,7 @@ movil = true
 geometrias = ["punto"]
 color = "#7c3aed"
 forma = "estrella"
-simbolo = "CD"
+icono = "carga"
 orden = 110
 
 [[tipos.campos]]
@@ -320,7 +320,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#1d4ed8"
 forma = "circulo"
-simbolo = "AP"
+icono = "agua"
 orden = 200
 
 [[tipos.campos]]
@@ -349,7 +349,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#0e7490"
 forma = "rombo"
-simbolo = "BD"
+icono = "banos"
 orden = 210
 
 [[tipos.campos]]
@@ -377,7 +377,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#c2410c"
 forma = "triangulo"
-simbolo = "AL"
+icono = "comida"
 orden = 220
 
 [[tipos.campos]]
@@ -406,7 +406,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#b91c1c"
 forma = "hexagono"
-simbolo = "AS"
+icono = "medico"
 orden = 230
 
 [[tipos.campos]]
@@ -428,7 +428,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#15803d"
 forma = "cuadrado"
-simbolo = "AB"
+icono = "albergue"
 orden = 240
 
 [[tipos.campos]]
@@ -467,7 +467,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#b45309"
 forma = "estrella"
-simbolo = "AC"
+icono = "acopio"
 orden = 250
 
 [[tipos.campos]]
@@ -494,7 +494,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#15803d"
 forma = "circulo"
-simbolo = "ZS"
+icono = "seguro"
 orden = 260
 
 [[tipos.campos]]
@@ -516,7 +516,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#4b5563"
 forma = "cuadrado"
-simbolo = "PI"
+icono = "info"
 orden = 270
 
 [[tipos.campos]]
@@ -538,7 +538,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#3f6212"
 forma = "rombo"
-simbolo = "VA"
+icono = "veterinaria"
 orden = 280
 
 [[tipos.campos]]
@@ -565,7 +565,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#78350f"
 forma = "triangulo"
-simbolo = "CO"
+icono = "combustible"
 orden = 290
 
 [[tipos.campos]]
@@ -595,7 +595,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#334155"
 forma = "hexagono"
-simbolo = "PC"
+icono = "mando"
 orden = 300
 
 [[tipos.campos]]
@@ -616,7 +616,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#0e7490"
 forma = "estrella"
-simbolo = "HE"
+icono = "helipuerto"
 orden = 310
 
 [[tipos.campos]]
@@ -637,7 +637,7 @@ categoria = "fijo"
 geometrias = ["punto"]
 color = "#9d174d"
 forma = "cuadrado"
-simbolo = "RA"
+icono = "ropa"
 orden = 320
 
 [[tipos.campos]]
@@ -661,7 +661,7 @@ categoria = "zona"
 geometrias = ["linea"]
 color = "#15803d"
 forma = "hexagono"
-simbolo = "RE"
+icono = "ruta"
 orden = 400
 
 [[tipos.campos]]
@@ -684,7 +684,7 @@ categoria = "zona"
 geometrias = ["punto", "linea"]
 color = "#b91c1c"
 forma = "triangulo"
-simbolo = "CV"
+icono = "corte"
 orden = 410
 
 [[tipos.campos]]
@@ -706,7 +706,7 @@ categoria = "zona"
 geometrias = ["poligono"]
 color = "#7f1d1d"
 forma = "cuadrado"
-simbolo = "ZR"
+icono = "riesgo"
 orden = 420
 
 [[tipos.campos]]
@@ -731,6 +731,6 @@ categoria = "requerimiento"
 geometrias = ["punto"]
 color = "#6d28d9"
 forma = "circulo"
-simbolo = "RQ"
+icono = "requerimiento"
 orden = 500
 descripcion = "Punto donde se necesita un recurso que todavía no está cubierto."

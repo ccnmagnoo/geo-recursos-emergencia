@@ -47,7 +47,7 @@ de operar por una sola persona bajo presión.
 ```
 content/            DATOS. Es lo único que cambia en operación.
   site.toml         Título, institución, contacto, umbral, mapa, teselas, emergencias.
-  tipos.toml        Catálogo de tipos: color, forma, símbolo y campos de detalle.
+  tipos.toml        Catálogo de tipos: color, forma, icono y campos de detalle.
   zonas.toml        Comunas y sectores para filtrar.
   recursos/         Un TOML por recurso. El nombre del archivo ES el id.
   requerimientos/   Necesidades abiertas y su asignación.

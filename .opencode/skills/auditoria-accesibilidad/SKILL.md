@@ -27,7 +27,7 @@ y usuarios de lector de pantalla, en un celular y con estrés.
 - [ ] Cada marcador tiene equivalente en la lista, con el mismo nombre y estado.
 - [ ] Los controles de zoom de Leaflet son alcanzables y tienen nombre en español.
 - [ ] Al aplicar un filtro se anuncia el número de resultados (`aria-live="polite"`).
-- [ ] La leyenda no depende solo del color: incluye forma y símbolo.
+- [ ] La leyenda no depende solo del color: incluye forma e icono.
 
 ## Ficha (panel / bottom sheet)
 

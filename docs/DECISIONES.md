@@ -126,6 +126,21 @@ decidir**, no leer. Se recorta texto, no información: todo sigue disponible a u
 impresión. El sistema visual usa tokens (espacio, tipografía, color), estados con punto + texto y
 un solo acento; sin dependencias nuevas.
 
+## D14 — Iconos de recurso en mapa, tarjetas y fichas
+
+**Decisión:** cada tipo declara un `icono` (enum cerrado) y el mismo trazo se usa en el marcador,
+la tarjeta, la lista, los filtros, la ficha, el diálogo y la impresión. Los trazos viven en
+`src/lib/iconos.ts` como geometría (paths, círculos, líneas), no como HTML, y se renderizan tanto
+en Astro como en el cliente con `createElementNS`.
+
+**Motivo:** las letras (`TI`, `AP`) obligaban a memorizar un código. Un icono representativo se
+reconoce antes de leer y refuerza la asociación mapa-tarjeta. La forma y el color se mantienen como
+segunda y tercera señal para daltonismo. El enum impide que un typo deje un marcador vacío.
+
+**Iconos:** los trazos base provienen de [Lucide](https://lucide.dev) v1.69.0, licencia **ISC**;
+los específicos (torre, estanque, grúa) se dibujaron en el mismo estilo de 24×24 con trazo 2. No se
+agrega ninguna dependencia en runtime: se copiaron al repositorio con atribución.
+
 ## Dependencias
 
 | Dependencia                                                      | Dónde      | Para qué                                     | Costo          |

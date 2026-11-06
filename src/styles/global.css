@@ -290,10 +290,31 @@ a:hover {
   .encabezado__institucion {
     display: none;
   }
+}
 
-  /* La página actual no necesita enlace en pantallas angostas. */
-  .nav a[aria-current='page'] {
-    display: none;
+/* En pantallas angostas el encabezado usa dos filas: marca y navegación. */
+@media (max-width: 30rem) {
+  .encabezado {
+    height: auto;
+  }
+
+  .encabezado__barra {
+    height: auto;
+    flex-wrap: wrap;
+    padding-block: 0.45rem;
+    row-gap: 0.25rem;
+  }
+
+  .encabezado__marca {
+    flex: 1 1 100%;
+  }
+
+  .nav {
+    flex: 1 1 100%;
+  }
+
+  .nav a {
+    min-height: 34px;
   }
 }
 
@@ -832,15 +853,16 @@ textarea:focus-visible {
 .marcador {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   color: #fff;
-  font-weight: 800;
-  font-size: 0.62rem;
   line-height: 1;
-  text-align: center;
   border: 2px solid #fff;
   box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
+}
+
+.marcador svg {
+  display: block;
 }
 
 .marcador--circulo {
@@ -862,7 +884,7 @@ textarea:focus-visible {
 
 .marcador--triangulo {
   clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-  padding-top: 7px;
+  padding-top: 5px;
 }
 
 .marcador--hexagono {
@@ -999,12 +1021,23 @@ textarea:focus-visible {
   margin-top: var(--space-2);
 }
 
-.tarjeta__punto {
-  width: 10px;
-  height: 10px;
-  margin-top: 0.35rem;
-  border-radius: 3px;
+/* Teja de icono: tinte suave del color del tipo, icono en color pleno. */
+.icono-teja {
+  --color-tipo: var(--ink-2);
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
   flex: none;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-tipo) 14%, var(--surface));
+  color: var(--color-tipo);
+}
+
+.icono-teja--sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
 }
 
 /* Carrusel en móvil, grid en escritorio. */
@@ -1375,7 +1408,7 @@ tbody tr:last-child td {
 
 .fila-recurso {
   display: grid;
-  grid-template-columns: 10px minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
@@ -1393,13 +1426,6 @@ tbody tr:last-child td {
 .fila-recurso:hover {
   border-color: var(--line-strong);
   background: var(--surface);
-}
-
-.fila-recurso__punto {
-  width: 10px;
-  height: 10px;
-  margin-top: 0.45rem;
-  border-radius: 3px;
 }
 
 .fila-recurso__nombre {
@@ -1424,7 +1450,7 @@ tbody tr:last-child td {
 
 @media (max-width: 40rem) {
   .fila-recurso {
-    grid-template-columns: 10px minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .fila-recurso__derecha {

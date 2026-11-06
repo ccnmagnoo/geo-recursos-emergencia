@@ -1,0 +1,74 @@
+---
+import { ICONOS, type IconoElemento, type IconoId } from '../lib/iconos';
+
+interface Props {
+  icono: IconoId | string;
+  tamano?: number;
+  grosor?: number;
+  clase?: string;
+}
+
+const { icono, tamano = 20, grosor = 2, clase } = Astro.props;
+const elementos: IconoElemento[] = ICONOS[icono as IconoId] ?? ICONOS.punto;
+
+const attr = (attrs: Record<string, string>, clave: string): string => attrs[clave] ?? '0';
+---
+
+<svg
+  class={clase}
+  width={tamano}
+  height={tamano}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width={grosor}
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {elementos.map((elemento) => {
+    if (elemento.tag === 'path') return <path d={attr(elemento.attrs, 'd')} />;
+    if (elemento.tag === 'circle') {
+      return (
+        <circle
+          cx={attr(elemento.attrs, 'cx')}
+          cy={attr(elemento.attrs, 'cy')}
+          r={attr(elemento.attrs, 'r')}
+        />
+      );
+    }
+    if (elemento.tag === 'line') {
+      return (
+        <line
+          x1={attr(elemento.attrs, 'x1')}
+          y1={attr(elemento.attrs, 'y1')}
+          x2={attr(elemento.attrs, 'x2')}
+          y2={attr(elemento.attrs, 'y2')}
+        />
+      );
+    }
+    if (elemento.tag === 'rect') {
+      return (
+        <rect
+          x={attr(elemento.attrs, 'x')}
+          y={attr(elemento.attrs, 'y')}
+          width={attr(elemento.attrs, 'width')}
+          height={attr(elemento.attrs, 'height')}
+          rx={attr(elemento.attrs, 'rx')}
+        />
+      );
+    }
+    if (elemento.tag === 'polyline') {
+      return <polyline points={attr(elemento.attrs, 'points')} />;
+    }
+    return (
+      <ellipse
+        cx={attr(elemento.attrs, 'cx')}
+        cy={attr(elemento.attrs, 'cy')}
+        rx={attr(elemento.attrs, 'rx')}
+        ry={attr(elemento.attrs, 'ry')}
+      />
+    );
+  })}
+</svg>

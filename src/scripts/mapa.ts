@@ -5,6 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 
 import type { RecursoVista } from '../lib/vista';
+import { ICONOS, type IconoId } from '../lib/iconos';
 import { esDesactualizado, formatearAbsoluta, formatearRelativa } from '../lib/tiempo';
 
 /**
@@ -49,6 +50,31 @@ function crear<K extends keyof HTMLElementTagNameMap>(
   if (texto !== undefined) nodo.textContent = texto;
   if (clase !== undefined) nodo.className = clase;
   return nodo;
+}
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function crearIcono(id: IconoId, tamano: number): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('width', String(tamano));
+  svg.setAttribute('height', String(tamano));
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+
+  for (const elemento of ICONOS[id] ?? ICONOS.punto) {
+    const nodo = document.createElementNS(SVG_NS, elemento.tag);
+    for (const [clave, valor] of Object.entries(elemento.attrs)) {
+      nodo.setAttribute(clave, valor);
+    }
+    svg.append(nodo);
+  }
+  return svg;
 }
 
 function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
@@ -108,13 +134,14 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     if (variante === 'anterior') caja.classList.add('marcador--anterior');
     if (variante === 'futuro') caja.classList.add('marcador--futuro');
     caja.style.background = recurso.tipo.color;
-    const simbolo = crear('span', recurso.tipo.simbolo);
-    caja.append(simbolo);
+    const forma = recurso.tipo.forma;
+    const tamanoIcono = forma === 'estrella' ? 12 : forma === 'triangulo' ? 13 : 16;
+    caja.append(crearIcono(recurso.tipo.icono, tamanoIcono));
     return L.divIcon({
       html: caja,
       className: 'marcador-envoltorio',
-      iconSize: [30, 30],
-      iconAnchor: [15, 15],
+      iconSize: [34, 34],
+      iconAnchor: [17, 17],
     });
   };
 
@@ -265,7 +292,12 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     const nodos: HTMLElement[] = [];
 
     const encabezado = crear('div');
-    const tipo = crear('p', `${recurso.tipo.etiqueta} · ${recurso.institucion}`, 'frescura');
+    const tipo = crear('p', undefined, 'frescura');
+    tipo.style.display = 'flex';
+    tipo.style.alignItems = 'center';
+    tipo.style.gap = '0.4rem';
+    tipo.append(crearIcono(recurso.tipo.icono, 16));
+    tipo.append(crear('span', `${recurso.tipo.etiqueta} · ${recurso.institucion}`));
     encabezado.append(tipo);
 
     const estado = crear('p');

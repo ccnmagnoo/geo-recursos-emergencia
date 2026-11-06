@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import IconoRecurso from '../components/IconoRecurso.astro';
 import { fechaPublicacion, recursos, site, tipoDe, zonas } from '../lib/content';
 import { alertasVigentesDe, etiquetaEstado, ultimaActualizacion } from '../lib/recurso';
 import { formatearAbsoluta } from '../lib/tiempo';
@@ -52,7 +53,10 @@ const filas = recursos.map((recurso) => ({
           {filas.map(({ recurso, tipo, actualizado, criticas }) => (
             <tr>
               <th scope="row">
-                {recurso.nombre}
+                <span style="display:inline-flex;align-items:center;gap:.35rem">
+                  <IconoRecurso icono={tipo.icono} tamano={14} />
+                  {recurso.nombre}
+                </span>
                 <div>
                   <small>{recurso.id}</small>
                 </div>

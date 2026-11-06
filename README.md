@@ -155,7 +155,7 @@ server {
 ```
 content/
   site.toml            Institución, contacto, teléfonos, umbral, centro del mapa, teselas.
-  tipos.toml           Catálogo de tipos: color, forma, símbolo y campos.
+  tipos.toml           Catálogo de tipos: color, forma, icono y campos.
   zonas.toml           Comunas y sectores.
   recursos/            Un archivo por recurso (el nombre es el id).
   requerimientos/      Necesidades abiertas y su asignación.

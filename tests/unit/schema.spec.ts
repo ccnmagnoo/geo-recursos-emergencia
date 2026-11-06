@@ -34,7 +34,7 @@ movil = true
 geometrias = ["punto"]
 color = "#b45309"
 forma = "circulo"
-simbolo = "TI"
+icono = "torre"
 
 [[tipos.campos]]
 clave = "autonomia_horas"
@@ -51,7 +51,7 @@ categoria = "zona"
 geometrias = ["poligono"]
 color = "#7f1d1d"
 forma = "cuadrado"
-simbolo = "ZR"
+icono = "riesgo"
 `;
 
 const ZONAS = `
@@ -197,6 +197,23 @@ texto = "Aviso"
       'TIL-002': `${segundo}${alerta}`,
     });
     expect(issues.some((i) => i.code === 'alerta-id-duplicado')).toBe(true);
+  });
+
+  it('rechaza un icono de tipo desconocido', () => {
+    const issues = errores(
+      { 'TIL-001': CABECERA_RECURSO },
+      {
+        tipos: {
+          ruta: 'content/tipos.toml',
+          texto: TIPOS.replace('icono = "torre"', 'icono = "inventado"'),
+        },
+      },
+    );
+    expect(
+      issues.some(
+        (issue) => issue.code === 'esquema' && issue.message.includes('Icono desconocido'),
+      ),
+    ).toBe(true);
   });
 
   it('detecta una geometría que el tipo de zona no admite', () => {

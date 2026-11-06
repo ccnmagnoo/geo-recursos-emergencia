@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import BadgeEstado from '../../components/BadgeEstado.astro';
 import AvisoFrescura from '../../components/AvisoFrescura.astro';
+import IconoRecurso from '../../components/IconoRecurso.astro';
 import { recursos, site, tipoDe, zonas } from '../../lib/content';
 import { conBase } from '../../lib/rutas';
 import {
@@ -57,10 +58,15 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
 
     <article>
       <header>
-        <p class="ficha__eyebrow">
-          {tipo.etiqueta} · {recurso.id}
-          {zona && <> · {zona.nombre}</>}
-          {recurso.ejemplo && <> · Ejemplo</>}
+        <p class="ficha__eyebrow" style="display:flex;align-items:center;gap:.4rem">
+          <span style={`color:${tipo.color}`}>
+            <IconoRecurso icono={tipo.icono} tamano={16} />
+          </span>
+          <span>
+            {tipo.etiqueta} · {recurso.id}
+            {zona && <> · {zona.nombre}</>}
+            {recurso.ejemplo && <> · Ejemplo</>}
+          </span>
         </p>
         <h1 style="margin-top:var(--space-1)">{recurso.nombre}</h1>
         <p class="ficha__institucion">{recurso.institucion}</p>

@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import BadgeEstado from '../components/BadgeEstado.astro';
 import AvisoFrescura from '../components/AvisoFrescura.astro';
+import MuestraTipo from '../components/MuestraTipo.astro';
 import {
   recursos,
   site,
@@ -24,9 +25,17 @@ const filas = recursos.map((recurso) => ({
   actualizado: ultimaActualizacion(recurso),
 }));
 
-const requerimientosVisibles = requerimientos.filter(
-  (requerimiento) => requerimiento.estado !== 'cubierto',
-);
+const requerimientosVisibles = requerimientos
+  .filter((requerimiento) => requerimiento.estado !== 'cubierto')
+  .map((requerimiento) => ({
+    ...requerimiento,
+    tipo: tiposPorId.get(requerimiento.tipo_recurso),
+  }));
+
+const zonasFilas = zonasGeo.map((zona) => ({
+  ...zona,
+  tipo: tiposPorId.get(zona.tipo),
+}));
 
 const prioridadLegible: Record<string, string> = {
   baja: 'Baja',
@@ -68,11 +77,7 @@ const geometriaLegible: Record<string, string> = {
       {filas.map(({ recurso, tipo, zona, actualizado }) => (
         <li>
           <a class="fila-recurso" href={conBase(`/recurso/${recurso.id}`)}>
-            <span
-              class="fila-recurso__punto"
-              style={`background:${tipo.color}`}
-              aria-hidden="true"
-            />
+            <MuestraTipo tipo={tipo} tamano="pequeno" />
             <span>
               <span class="fila-recurso__nombre">{recurso.nombre}</span>
               <span class="fila-recurso__meta">
@@ -103,11 +108,7 @@ const geometriaLegible: Record<string, string> = {
           {requerimientosVisibles.map((requerimiento) => (
             <li>
               <div class="fila-recurso" style="cursor:default">
-                <span
-                  class="fila-recurso__punto"
-                  style="background:var(--accent)"
-                  aria-hidden="true"
-                />
+                {requerimiento.tipo && <MuestraTipo tipo={requerimiento.tipo} tamano="pequeno" />}
                 <span>
                   <span class="fila-recurso__nombre">{requerimiento.nombre}</span>
                   <span class="fila-recurso__meta">
@@ -147,18 +148,14 @@ const geometriaLegible: Record<string, string> = {
           Zonas y cortes
         </h2>
         <ul class="lista-compacta">
-          {zonasGeo.map((zona) => (
+          {zonasFilas.map((zona) => (
             <li>
               <div class="fila-recurso" style="cursor:default">
-                <span
-                  class="fila-recurso__punto"
-                  style={`background:${tiposPorId.get(zona.tipo)?.color ?? 'var(--ink-3)'}`}
-                  aria-hidden="true"
-                />
+                {zona.tipo && <MuestraTipo tipo={zona.tipo} tamano="pequeno" />}
                 <span>
                   <span class="fila-recurso__nombre">{zona.nombre}</span>
                   <span class="fila-recurso__meta">
-                    <span>{tiposPorId.get(zona.tipo)?.etiqueta ?? zona.tipo}</span>
+                    <span>{zona.tipo?.etiqueta ?? 'Zona'}</span>
                     <span>{geometriaLegible[zona.geometria.tipo] ?? zona.geometria.tipo}</span>
                     {zona.zona && <span>{zonaNombre(zona.zona)}</span>}
                   </span>

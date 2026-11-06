@@ -19,11 +19,12 @@ y los formularios del panel se generan desde `content/tipos.toml`.
 | `geometrias`                   | `["punto"]` para casi todo; `["linea"]` o `["poligono"]` en zonas.          |
 | `color`                        | Hex de 6 dígitos. Debe contrastar ≥ 4.5:1 con texto blanco.                 |
 | `forma`                        | `circulo`, `cuadrado`, `rombo`, `triangulo`, `hexagono`, `estrella`.        |
-| `simbolo`                      | 1-2 caracteres legibles a 12 px (ej. `TI`, `AP`).                           |
+| `icono`                        | Id de `src/lib/iconos.ts` (ej. `torre`, `agua`, `albergue`).                |
 | `orden`                        | Orden en la leyenda y los filtros. Deja espacio (10, 20, 30…).              |
 
-**El color nunca va solo.** Un tipo nuevo necesita forma distinta de sus vecinos y un símbolo
-propio; si no, una persona con daltonismo no puede distinguirlo.
+**El color nunca va solo.** Un tipo nuevo necesita forma, color e icono distintos de sus vecinos;
+si no, una persona con daltonismo no puede distinguirlo. Si el icono que necesitas no existe, se
+agrega al set (trazo 24×24, estilo Lucide) antes de usarlo: el esquema rechaza ids desconocidos.
 
 Verifica el contraste con la fórmula WCAG antes de elegir. Un color oscuro y saturado suele
 funcionar; los pasteles no.
@@ -40,7 +41,7 @@ movil = true
 geometrias = ["punto"]
 color = "#0f766e"
 forma = "rombo"
-simbolo = "GR"
+icono = "grua"
 orden = 115
 
 [[tipos.campos]]

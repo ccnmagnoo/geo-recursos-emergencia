@@ -69,7 +69,7 @@ npm run dev
 ```
 
 Revisa `/lista`, la ficha `/recurso/TIL-002` y que el marcador aparezca en el mapa con la forma y
-el símbolo correctos. Luego commit:
+el icono correcto. Luego commit:
 
 ```bash
 git add content/recursos/TIL-002.toml

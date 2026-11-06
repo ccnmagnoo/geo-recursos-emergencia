@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { ICONO_IDS, type IconoId } from './iconos';
+
 /**
  * Esquema del contenido operativo.
  *
@@ -291,7 +293,10 @@ export const TipoRecurso = z.strictObject({
   geometrias: z.array(z.enum(GEOMETRIAS)).min(1),
   color: ColorHex,
   forma: z.enum(FORMAS),
-  simbolo: z.string().min(1).max(2),
+  icono: z.custom<IconoId>(
+    (valor) => typeof valor === 'string' && (ICONO_IDS as string[]).includes(valor),
+    { message: `Icono desconocido. Disponibles: ${ICONO_IDS.join(', ')}.` },
+  ),
   orden: z.number().int().min(0).max(999).default(100),
   descripcion: z.string().max(300).optional(),
   campos: z.array(CampoExtra).default([]),

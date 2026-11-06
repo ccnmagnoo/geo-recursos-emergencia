@@ -14,6 +14,8 @@ test.describe('vista pública', () => {
 
     // La isla del mapa monta Leaflet dentro del contenedor.
     await expect(page.locator('#mapa.leaflet-container')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('.tarjeta--enlace svg').first()).toBeVisible();
+    await expect(page.locator('#mapa .marcador svg').first()).toBeVisible();
     expect(errores).toEqual([]);
   });
 
@@ -73,6 +75,7 @@ test.describe('vista pública', () => {
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Recursos');
     await expect(page.locator('ul.lista-compacta').first().locator('li')).toHaveCount(7);
     await expect(page.getByRole('link', { name: /Batería de baños químicos/ })).toBeVisible();
+    await expect(page.locator('.fila-recurso svg').first()).toBeVisible();
 
     await contexto.close();
   });

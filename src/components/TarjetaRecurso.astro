@@ -4,6 +4,7 @@ import { conBase } from '../lib/rutas';
 import { ultimaActualizacion } from '../lib/recurso';
 import BadgeEstado from './BadgeEstado.astro';
 import AvisoFrescura from './AvisoFrescura.astro';
+import MuestraTipo from './MuestraTipo.astro';
 
 interface Props {
   recurso: RecursoT;
@@ -22,7 +23,7 @@ const actualizado = ultimaActualizacion(recurso);
     data-recurso={recurso.id}
   >
     <span class="tarjeta__fila">
-      <span class="tarjeta__punto" style={`background:${tipo.color}`} aria-hidden="true"></span>
+      <MuestraTipo tipo={tipo} />
       <span class="tarjeta__titulo">{recurso.nombre}</span>
     </span>
 

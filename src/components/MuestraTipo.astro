@@ -1,5 +1,6 @@
 ---
 import type { TipoRecursoT } from '../lib/schema';
+import IconoRecurso from './IconoRecurso.astro';
 
 interface Props {
   tipo: TipoRecursoT;
@@ -7,9 +8,13 @@ interface Props {
 }
 
 const { tipo, tamano = 'normal' } = Astro.props;
-const estilo = `background:${tipo.color};${tamano === 'pequeno' ? 'width:22px;height:22px;font-size:.62rem;' : ''}`;
+const pequeno = tamano === 'pequeno';
 ---
 
-<span class={`marcador marcador--${tipo.forma}`} style={estilo} aria-hidden="true">
-  <span>{tipo.simbolo}</span>
+<span
+  class:list={['icono-teja', pequeno && 'icono-teja--sm']}
+  style={`--color-tipo:${tipo.color}`}
+  aria-hidden="true"
+>
+  <IconoRecurso icono={tipo.icono} tamano={pequeno ? 15 : 18} />
 </span>

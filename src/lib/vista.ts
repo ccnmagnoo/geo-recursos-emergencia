@@ -1,4 +1,5 @@
 import type { RecursoT, SiteT, TipoRecursoT } from './schema';
+import type { IconoId } from './iconos';
 import {
   alertasVigentesDe,
   detallesLegibles,
@@ -44,7 +45,7 @@ export interface RecursoVista {
     etiqueta: string;
     color: string;
     forma: string;
-    simbolo: string;
+    icono: IconoId;
     movil: boolean;
   };
   estado: string;
@@ -119,7 +120,7 @@ export function aVista(recurso: RecursoT, tipo: TipoRecursoT, site: SiteT): Recu
       etiqueta: tipo.etiqueta,
       color: tipo.color,
       forma: tipo.forma,
-      simbolo: tipo.simbolo,
+      icono: tipo.icono,
       movil: tipo.movil,
     },
     estado: recurso.estado_actual,
