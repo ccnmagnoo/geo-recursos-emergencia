@@ -1,6 +1,6 @@
 id = "ALI-004"
 tipo = "alimentacion"
-nombre = "[ejemplo] Punto de alimentación — Plaza Las Palmas"
+nombre = "Punto de alimentación — Plaza Las Palmas"
 institucion = "Municipalidad de Vista Verde / Ollas comunes"
 descripcion = "Almuerzo y cena para personas afectadas y voluntariado."
 publicado = true

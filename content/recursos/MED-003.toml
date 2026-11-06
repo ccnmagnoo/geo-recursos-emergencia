@@ -1,6 +1,6 @@
 id = "MED-003"
 tipo = "puesto_medico_movil"
-nombre = "[ejemplo] Puesto médico móvil — Quebrada Seca"
+nombre = "Puesto médico móvil — Quebrada Seca"
 institucion = "Servicio de Salud / SAMU"
 descripcion = "Atención de urgencias menores, curaciones y apoyo psicológico."
 publicado = true

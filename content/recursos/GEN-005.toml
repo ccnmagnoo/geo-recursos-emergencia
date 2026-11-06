@@ -1,6 +1,6 @@
 id = "GEN-005"
 tipo = "generador"
-nombre = "[ejemplo] Generador 5 kW — Puesto de mando"
+nombre = "Generador 5 kW — Puesto de mando"
 institucion = "Bomberos de Vista Verde"
 descripcion = "Generador de respaldo para comunicaciones y carga de equipos."
 publicado = true

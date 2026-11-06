@@ -1,6 +1,6 @@
 id = "TIL-001"
 tipo = "torre_iluminacion"
-nombre = "[ejemplo] Torre de iluminación N°1 — Sector Las Palmas"
+nombre = "Torre de iluminación N°1 — Sector Las Palmas"
 institucion = "Municipalidad de Vista Verde"
 descripcion = "Torre móvil de 4 focos LED, autonomía aproximada de 20 h."
 publicado = true

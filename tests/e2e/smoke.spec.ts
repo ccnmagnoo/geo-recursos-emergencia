@@ -9,7 +9,7 @@ test.describe('vista pública', () => {
 
     await expect(page).toHaveTitle(/Recursos de Emergencia/);
     await expect(page.locator('#mapa')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Ahora mismo' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Alertas y traslados vigentes' })).toBeVisible();
     await expect(page.getByRole('status')).toContainText(/recurso/);
 
     // La isla del mapa monta Leaflet dentro del contenedor.
@@ -21,11 +21,12 @@ test.describe('vista pública', () => {
     await page.goto('/');
     await page.getByRole('button', { name: 'Filtros', exact: true }).click();
 
-    await page.getByLabel('Buscar por nombre, tipo o sector').fill('agua');
+    await page.getByLabel('Buscar recursos').fill('agua');
     await expect(page.getByRole('status')).toContainText('1 recurso');
+    await expect(page.locator('[data-recurso]:visible')).toHaveCount(1);
 
-    await page.getByLabel('Buscar por nombre, tipo o sector').fill('zzzz');
-    await expect(page.getByRole('status')).toContainText('Ningún recurso coincide');
+    await page.getByLabel('Buscar recursos').fill('zzzz');
+    await expect(page.getByRole('status')).toContainText('Sin resultados');
   });
 
   test('la ficha del mapa muestra estado, frescura y enlace de Google Maps', async ({ page }) => {
@@ -48,7 +49,7 @@ test.describe('vista pública', () => {
     await page.goto('/recurso/TIL-001/');
 
     await expect(page.getByText('Proyección, no confirmada').first()).toBeVisible();
-    await expect(page.getByText(/no ocurrió/)).toBeVisible();
+    await expect(page.getByText(/la fecha es una estimación/i)).toBeVisible();
     await expect(page.getByRole('link', { name: /Cómo llegar en Google Maps/ })).toHaveAttribute(
       'href',
       /^https:\/\//,
@@ -69,8 +70,8 @@ test.describe('vista pública', () => {
     const page = await contexto.newPage();
     await page.goto('/lista/');
 
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Recursos de emergencia');
-    await expect(page.locator('table').first().locator('tbody tr')).toHaveCount(7);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Recursos');
+    await expect(page.locator('ul.lista-compacta').first().locator('li')).toHaveCount(7);
     await expect(page.getByRole('link', { name: /Batería de baños químicos/ })).toBeVisible();
 
     await contexto.close();

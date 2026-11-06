@@ -60,7 +60,9 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     scrollWheelZoom: false,
   });
 
-  L.control.zoom({ zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' }).addTo(mapa);
+  L.control
+    .zoom({ position: 'bottomleft', zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' })
+    .addTo(mapa);
 
   L.tileLayer(datos.teselas.url, {
     maxZoom: datos.teselas.maxZoom,
@@ -111,8 +113,8 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     return L.divIcon({
       html: caja,
       className: 'marcador-envoltorio',
-      iconSize: [34, 34],
-      iconAnchor: [17, 17],
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
     });
   };
 
@@ -529,8 +531,29 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     }
 
     if (resultado !== null) {
-      resultado.textContent = visibles.size === 1 ? '1 recurso' : `${visibles.size} recursos`;
-      if (visibles.size === 0) resultado.textContent = 'Ningún recurso coincide con los filtros';
+      resultado.textContent =
+        visibles.size === 0
+          ? 'Sin resultados'
+          : visibles.size === 1
+            ? '1 recurso'
+            : `${visibles.size} recursos`;
+    }
+
+    const conteo = document.getElementById('conteo-tarjetas');
+    if (conteo !== null) {
+      conteo.textContent = visibles.size === 1 ? '1 recurso' : `${visibles.size} recursos`;
+    }
+
+    const sinTarjetas = document.getElementById('sin-tarjetas');
+    if (sinTarjetas !== null) sinTarjetas.hidden = visibles.size !== 0;
+
+    for (const enlace of document.querySelectorAll<HTMLElement>('[data-recurso]')) {
+      const id = enlace.dataset['recurso'];
+      const visible = id !== undefined && visibles.has(id);
+      enlace.hidden = !visible;
+      if (enlace.parentElement instanceof HTMLElement) {
+        enlace.parentElement.hidden = !visible;
+      }
     }
   };
 
@@ -553,16 +576,35 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     aplicar();
   });
 
+  const cerrarPanel = (): void => {
+    if (!(panel instanceof HTMLElement)) return;
+    panel.setAttribute('hidden', '');
+    botonFiltros?.setAttribute('aria-expanded', 'false');
+  };
+
   botonFiltros?.addEventListener('click', () => {
     if (!(panel instanceof HTMLElement)) return;
-    const expandido = panel.hasAttribute('hidden');
-    if (expandido) {
+    const abrir = panel.hasAttribute('hidden');
+    if (abrir) {
       panel.removeAttribute('hidden');
     } else {
       panel.setAttribute('hidden', '');
     }
-    botonFiltros.setAttribute('aria-expanded', String(expandido));
-    mapa.invalidateSize();
+    botonFiltros.setAttribute('aria-expanded', String(abrir));
+  });
+
+  document.getElementById('cerrar-filtros')?.addEventListener('click', cerrarPanel);
+
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key === 'Escape') cerrarPanel();
+  });
+
+  document.addEventListener('click', (evento) => {
+    if (!(panel instanceof HTMLElement) || panel.hasAttribute('hidden')) return;
+    const objetivo = evento.target;
+    if (!(objetivo instanceof Node)) return;
+    if (panel.contains(objetivo) || botonFiltros?.contains(objetivo) === true) return;
+    cerrarPanel();
   });
 
   mapa.addLayer(cluster);
@@ -581,7 +623,11 @@ function iniciarMapa(contenedor: HTMLElement, datos: DatosMapa): void {
     const puntos = datos.recursos.map(
       (recurso) => [recurso.ubicacion.lat, recurso.ubicacion.lng] as [number, number],
     );
-    mapa.fitBounds(L.latLngBounds(puntos).pad(0.15), { maxZoom: datos.centro.zoom });
+    mapa.fitBounds(L.latLngBounds(puntos).pad(0.15), {
+      maxZoom: datos.centro.zoom,
+      paddingTopLeft: [16, 76],
+      paddingBottomRight: [16, 16],
+    });
   }
 }
 

@@ -1,6 +1,6 @@
 id = "ALB-002"
 tipo = "albergue"
-nombre = "[ejemplo] Albergue — Liceo Bicentenario"
+nombre = "Albergue — Liceo Bicentenario"
 institucion = "Municipalidad de Vista Verde / Cruz Roja"
 descripcion = "Albergue con colchonetas, abrigo y alimentación. Se admiten mascotas con correa."
 publicado = true

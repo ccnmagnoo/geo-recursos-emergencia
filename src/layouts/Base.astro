@@ -45,7 +45,6 @@ const csp = [
 const enlaces = [
   { ruta: '/', etiqueta: 'Mapa' },
   { ruta: '/lista', etiqueta: 'Lista' },
-  { ruta: '/imprimir', etiqueta: 'Imprimir' },
 ];
 ---
 
@@ -57,7 +56,7 @@ const enlaces = [
     <meta http-equiv="Content-Security-Policy" content={csp} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#0b5cad" />
+    <meta name="theme-color" content="#0b63ce" />
     <meta name="generator" content={Astro.generator} />
     <title>{tituloCompleto}</title>
     <meta name="description" content={descripcionFinal} />
@@ -79,10 +78,15 @@ const enlaces = [
     </a>
 
     <header class="encabezado">
-      <div class="envoltorio encabezado__barra">
+      <div class="shell encabezado__barra">
         <a class="encabezado__marca" href={conBase('/')}>
-          <span class="encabezado__titulo">{site.titulo}</span>
-          <span class="encabezado__institucion">{site.institucion}</span>
+          <span class="encabezado__punto" aria-hidden="true">
+            +
+          </span>
+          <span class="encabezado__texto">
+            <span class="encabezado__titulo">{site.titulo}</span>
+            <span class="encabezado__institucion">{site.institucion}</span>
+          </span>
         </a>
         <nav class="nav" aria-label="Navegación principal">
           {enlaces.map((enlace) => (
@@ -99,7 +103,7 @@ const enlaces = [
 
     {site.aviso && (
       <div class="aviso-global" role="note">
-        <div class="envoltorio">{site.aviso}</div>
+        <div class="shell">{site.aviso}</div>
       </div>
     )}
 
@@ -108,48 +112,35 @@ const enlaces = [
     </main>
 
     <footer class="pie">
-      <div class="envoltorio">
-        <div class="pie__bloques">
-          <div>
-            <h2>{site.titulo}</h2>
-            <p>{site.institucion}</p>
-            <p>{site.contacto}</p>
-          </div>
-          <div>
-            <h2>Emergencias</h2>
-            <ul>
-              {site.emergencias.map((emergencia) => (
-                <li>
-                  <a href={`tel:${emergencia.telefono}`}>
-                    {emergencia.nombre}: {emergencia.telefono}
-                  </a>
-                  {emergencia.descripcion && (
-                    <span class="frescura"> — {emergencia.descripcion}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2>Datos</h2>
-            <ul>
+      <div class="shell">
+        <div class="pie__barra">
+          <p style="margin:0">
+            <strong>{site.titulo}</strong> · {site.institucion}
+            <br />
+            <span>{site.contacto}</span>
+          </p>
+          <ul class="pie__telefonos" aria-label="Teléfonos de emergencia">
+            {site.emergencias.map((emergencia) => (
               <li>
-                <a href={archivoConBase('/data/recursos.json')}>Datos abiertos (JSON)</a>
+                <a href={`tel:${emergencia.telefono}`}>
+                  <span aria-hidden="true">☎</span>
+                  {emergencia.nombre} {emergencia.telefono}
+                </a>
               </li>
-              <li>
-                <a href={archivoConBase('/data/recursos.geojson')}>GeoJSON</a>
-              </li>
-              <li>
-                <a href={conBase('/lista')}>Lista sin mapa</a>
-              </li>
-            </ul>
+            ))}
+          </ul>
+          <div class="pie__enlaces">
+            <a href={conBase('/lista')}>Lista sin mapa</a>
+            <a href={conBase('/imprimir')}>Imprimir</a>
+            <a href={archivoConBase('/data/recursos.json')}>JSON</a>
+            <a href={archivoConBase('/data/recursos.geojson')}>GeoJSON</a>
           </div>
+          <p class="pie__nota">
+            Última publicación:{' '}
+            <time datetime={fechaPublicacion}>{formatearAbsoluta(fechaPublicacion)}</time>. Cada
+            ficha indica su propia hora de actualización.
+          </p>
         </div>
-        <p style="margin-top: 1rem">
-          Última publicación:{' '}
-          <time datetime={fechaPublicacion}>{formatearAbsoluta(fechaPublicacion)}</time>.
-          Información operativa sujeta a cambios; cada ficha indica su propia hora de actualización.
-        </p>
       </div>
     </footer>
 

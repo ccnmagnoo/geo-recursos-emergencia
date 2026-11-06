@@ -1,15 +1,18 @@
 ---
 import { site } from '../lib/content';
-import { etiquetaFrescura } from '../lib/tiempo';
+import { etiquetaFrescura, formatearRelativa, formatearRelativaCorta } from '../lib/tiempo';
 
 interface Props {
   fecha: string;
-  /** Compacto para tarjetas y tablas; completo para la ficha. */
+  /** Compacto para tarjetas: solo "hace 2 horas", sin fecha absoluta. */
   compacto?: boolean;
 }
 
 const { fecha, compacto = false } = Astro.props;
 const etiqueta = etiquetaFrescura(fecha, site.umbral_desactualizado_horas);
+const relativa = compacto ? formatearRelativaCorta(fecha) : formatearRelativa(fecha);
+const texto = compacto ? relativa : `Actualizado ${relativa}`;
+const prefijo = compacto ? '' : 'Actualizado';
 ---
 
 <span
@@ -17,22 +20,22 @@ const etiqueta = etiquetaFrescura(fecha, site.umbral_desactualizado_horas);
   data-frescura
   data-fecha={fecha}
   data-umbral={site.umbral_desactualizado_horas}
+  data-prefijo={prefijo}
+  data-corta={compacto ? 'true' : 'false'}
 >
-  <span data-frescura-texto>{etiqueta.texto}</span>
+  <span data-frescura-texto>{texto}</span>
   {!compacto && (
     <>
       {' · '}
       <time datetime={fecha}>{etiqueta.absoluta}</time>
     </>
   )}
-  {etiqueta.desactualizado && (
-    <span class="solo-lector">
-      . La información supera el umbral configurado y puede estar desactualizada.
-    </span>
-  )}
   {compacto && (
     <time class="solo-lector" datetime={fecha}>
       {etiqueta.absoluta}
     </time>
+  )}
+  {etiqueta.desactualizado && (
+    <span class="solo-lector">. La información puede estar desactualizada.</span>
   )}
 </span>

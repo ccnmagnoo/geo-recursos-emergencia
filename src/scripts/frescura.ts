@@ -1,4 +1,4 @@
-import { esDesactualizado, formatearRelativa } from '../lib/tiempo';
+import { esDesactualizado, formatearRelativa, formatearRelativaCorta } from '../lib/tiempo';
 
 /** Actualiza los textos "hace X" sin depender de la hora del build. */
 
@@ -11,7 +11,8 @@ function actualizar(): void {
     const prefijo = nodo.dataset['prefijo'] ?? 'Actualizado';
     const texto = nodo.querySelector<HTMLElement>('[data-frescura-texto]');
     if (texto !== null) {
-      const relativa = formatearRelativa(fecha);
+      const corta = nodo.dataset['corta'] === 'true';
+      const relativa = corta ? formatearRelativaCorta(fecha) : formatearRelativa(fecha);
       texto.textContent = prefijo === '' ? relativa : `${prefijo} ${relativa}`;
     }
     nodo.classList.toggle(

@@ -1,6 +1,6 @@
 id = "AGU-014"
 tipo = "agua_potable"
-nombre = "[ejemplo] Punto de agua potable — Sede Vecinal El Mirador"
+nombre = "Punto de agua potable — Sede Vecinal El Mirador"
 institucion = "Municipalidad de Vista Verde / APR"
 descripcion = "Entrega de agua potable en bidones. Llevar envase propio."
 publicado = true

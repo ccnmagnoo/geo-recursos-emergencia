@@ -120,11 +120,21 @@ export function formatearRelativa(iso: string, ahora: Date = new Date()): string
   return RELATIVA.format(Math.round(deltaSegundos / (365 * 86_400)), 'year');
 }
 
+/** Versión corta para tarjetas y chips: "hace 2 h", "en 3 d". */
+export function formatearRelativaCorta(iso: string, ahora: Date = new Date()): string {
+  const delta = Math.round((parsearFecha(iso).getTime() - ahora.getTime()) / 1000);
+  const absoluto = Math.abs(delta);
+  if (absoluto < 45) return 'ahora';
+  const prefijo = delta > 0 ? 'en ' : 'hace ';
+  if (absoluto < 3600) return `${prefijo}${Math.max(1, Math.round(absoluto / 60))} min`;
+  if (absoluto < 86_400) return `${prefijo}${Math.round(absoluto / 3600)} h`;
+  if (absoluto < 30 * 86_400) return `${prefijo}${Math.round(absoluto / 86_400)} d`;
+  return formatearAbsoluta(iso);
+}
+
 export function antiguedadMs(iso: string, ahora: Date = new Date()): number {
   return ahora.getTime() - parsearFecha(iso).getTime();
 }
-
-/** ¿El dato supera el umbral configurado? */
 export function esDesactualizado(
   iso: string,
   umbralHoras: number,

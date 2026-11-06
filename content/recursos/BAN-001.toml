@@ -1,6 +1,6 @@
 id = "BAN-001"
 tipo = "bano_quimico"
-nombre = "[ejemplo] Batería de baños químicos — Escuela El Mirador"
+nombre = "Batería de baños químicos — Escuela El Mirador"
 institucion = "Municipalidad de Vista Verde"
 descripcion = "Seis unidades, una de ellas accesible, trasladadas desde la plaza."
 publicado = true

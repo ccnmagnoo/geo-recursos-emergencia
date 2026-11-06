@@ -1,0 +1,39 @@
+---
+import type { RecursoT, TipoRecursoT } from '../lib/schema';
+import { conBase } from '../lib/rutas';
+import { ultimaActualizacion } from '../lib/recurso';
+import BadgeEstado from './BadgeEstado.astro';
+import AvisoFrescura from './AvisoFrescura.astro';
+
+interface Props {
+  recurso: RecursoT;
+  tipo: TipoRecursoT;
+  zonaNombre?: string | undefined;
+}
+
+const { recurso, tipo, zonaNombre } = Astro.props;
+const actualizado = ultimaActualizacion(recurso);
+---
+
+<li>
+  <a
+    class="tarjeta tarjeta--enlace"
+    href={conBase(`/recurso/${recurso.id}`)}
+    data-recurso={recurso.id}
+  >
+    <span class="tarjeta__fila">
+      <span class="tarjeta__punto" style={`background:${tipo.color}`} aria-hidden="true"></span>
+      <span class="tarjeta__titulo">{recurso.nombre}</span>
+    </span>
+
+    <span class="tarjeta__fila" style="align-items:center;justify-content:space-between">
+      <BadgeEstado estado={recurso.estado_actual} />
+      <AvisoFrescura fecha={actualizado} compacto />
+    </span>
+
+    <span class="tarjeta__meta">
+      <span>{tipo.etiqueta}</span>
+      {zonaNombre && <span>{zonaNombre}</span>}
+    </span>
+  </a>
+</li>

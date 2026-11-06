@@ -113,6 +113,19 @@ archivos, conflictos, expiración de token y permisos finos; se hará cuando exi
 operativa real. El diseño previsto: token _fine-grained_ en `sessionStorage`, commits por archivo
 con mensaje generado, y confirmación explícita antes de cada escritura.
 
+## D13 — Diseño mapa primero y baja densidad
+
+**Decisión:** la portada prioriza el mapa (55–60 vh) con una barra flotante, alertas como chips de
+una línea y tarjetas de tres datos. La ficha usa acordeones (`<details>`) para historial,
+observaciones, correcciones y detalles. La lista deja de ser una tabla de siete columnas y pasa a
+filas compactas.
+
+**Motivo:** la versión anterior apilaba cinco bloques antes del mapa y repetía tipo, institución,
+zona, ubicación y frescura en cuatro lugares. En emergencia, la persona necesita **ubicarse y
+decidir**, no leer. Se recorta texto, no información: todo sigue disponible a un toque y en la
+impresión. El sistema visual usa tokens (espacio, tipografía, color), estados con punto + texto y
+un solo acento; sin dependencias nuevas.
+
 ## Dependencias
 
 | Dependencia                                                      | Dónde      | Para qué                                     | Costo          |

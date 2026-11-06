@@ -1,0 +1,62 @@
+---
+import type { AlertaDestacada, TrasladoDestacado } from '../lib/content';
+import { conBase } from '../lib/rutas';
+import { formatearRelativaCorta } from '../lib/tiempo';
+
+interface Props {
+  alertas: AlertaDestacada[];
+  traslados: TrasladoDestacado[];
+  ahora?: Date;
+}
+
+const { alertas, traslados, ahora = new Date() } = Astro.props;
+const hayAlgo = alertas.length > 0 || traslados.length > 0;
+---
+
+{hayAlgo && (
+  <section class="chips-alertas" aria-labelledby="alertas-titulo">
+    <h2 id="alertas-titulo" class="solo-lector">
+      Alertas y traslados vigentes
+    </h2>
+
+    {alertas.map(({ recurso, alerta }) => (
+      <a
+        class:list={['chip-alerta', alerta.severidad === 'critica' && 'chip-alerta--critica']}
+        href={conBase(`/recurso/${recurso.id}`)}
+        aria-label={`Alerta ${alerta.severidad === 'critica' ? 'crítica' : 'de precaución'}: ${alerta.texto}. ${recurso.nombre}. ${formatearRelativaCorta(alerta.fecha, ahora)}`}
+      >
+        <span class="chip-alerta__punto" aria-hidden="true" />
+        <span class="chip-alerta__sev">
+          {alerta.severidad === 'critica' ? 'Crítica' : 'Precaución'}
+        </span>
+        <span class="chip-alerta__texto">{alerta.texto}</span>
+        <time class="chip-alerta__fecha" datetime={alerta.fecha}>
+          {formatearRelativaCorta(alerta.fecha, ahora)}
+        </time>
+      </a>
+    ))}
+
+    {traslados.map(({ recurso, derivado }) => {
+      const futura = derivado.futura;
+      if (futura === undefined) return null;
+      return (
+        <a
+          class="chip-alerta"
+          href={conBase(`/recurso/${recurso.id}`)}
+          aria-label={`Traslado ${futura.estado === 'en_curso' ? 'en curso' : 'proyectado'}: ${recurso.nombre} hacia ${futura.lugar.nombre}`}
+        >
+          <span class="chip-alerta__punto" style="background:var(--accent)" aria-hidden="true" />
+          <span class="chip-alerta__sev">
+            {futura.estado === 'en_curso' ? 'En traslado' : 'Proyección'}
+          </span>
+          <span class="chip-alerta__texto">hacia {futura.lugar.nombre}</span>
+          {futura.fecha !== undefined && (
+            <time class="chip-alerta__fecha" datetime={futura.fecha}>
+              {formatearRelativaCorta(futura.fecha, ahora)}
+            </time>
+          )}
+        </a>
+      );
+    })}
+  </section>
+)}

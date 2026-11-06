@@ -4,18 +4,9 @@ import { etiquetaEstado, tonoEstado } from '../lib/recurso';
 
 interface Props {
   estado: EstadoRecurso;
-  /** Texto adicional para lectores de pantalla. */
-  contexto?: string;
 }
 
-const { estado, contexto } = Astro.props;
-const tono = tonoEstado(estado);
+const { estado } = Astro.props;
 ---
 
-<span class={`badge badge--${tono}`}>
-  <span aria-hidden="true">
-    {tono === 'ok' ? '✓' : tono === 'falla' ? '✕' : tono === 'alerta' ? '!' : '·'}
-  </span>
-  {etiquetaEstado(estado)}
-  {contexto && <span class="solo-lector">, {contexto}</span>}
-</span>
+<span class={`badge badge--${tonoEstado(estado)}`}>{etiquetaEstado(estado)}</span>

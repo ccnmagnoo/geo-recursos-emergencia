@@ -1,6 +1,6 @@
 id = "CV-001"
 tipo = "corte_vial"
-nombre = "[ejemplo] Corte de vía — Camino Quebrada Seca"
+nombre = "Corte de vía — Camino Quebrada Seca"
 descripcion = "Paso cerrado por árboles caídos y línea de fuego."
 publicado = true
 ejemplo = true

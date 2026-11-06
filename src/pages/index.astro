@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
-import AlertasVigentes from '../components/AlertasVigentes.astro';
+import AlertasChips from '../components/AlertasChips.astro';
 import Mapa from '../components/Mapa.astro';
+import TarjetaRecurso from '../components/TarjetaRecurso.astro';
 import {
   alertasCriticas,
   recursos,
@@ -9,6 +10,7 @@ import {
   tipoDe,
   tipos,
   trasladosProximos,
+  zonas,
   zonasGeo,
   zonasVisibles,
 } from '../lib/content';
@@ -17,6 +19,9 @@ import { aVista } from '../lib/vista';
 const vistas = recursos.map((recurso) => aVista(recurso, tipoDe(recurso), site));
 const alertas = alertasCriticas();
 const traslados = trasladosProximos();
+
+const zonaNombre = (id: string | undefined): string | undefined =>
+  id === undefined ? undefined : zonas.find((zona) => zona.id === id)?.nombre;
 ---
 
 <Base
@@ -26,23 +31,36 @@ const traslados = trasladosProximos();
   }
   tituloPropio
 >
-  <div class="envoltorio" style="padding-block:1rem">
-    <h1>{site.titulo}</h1>
-    {site.subtitulo && (
-      <p style="margin:0;color:var(--texto-suave);font-size:1.05rem">{site.subtitulo}</p>
-    )}
+  <h1 class="solo-lector">{site.titulo}</h1>
+
+  <div class="shell">
+    <AlertasChips alertas={alertas} traslados={traslados} />
   </div>
 
-  <div class="envoltorio" style="margin-bottom:1rem">
-    <AlertasVigentes alertas={alertas} traslados={traslados} />
+  <div class="shell">
+    <Mapa recursos={vistas} tipos={tipos} zonas={zonasVisibles} zonasGeo={zonasGeo} site={site} />
   </div>
 
-  <Mapa recursos={vistas} tipos={tipos} zonas={zonasVisibles} zonasGeo={zonasGeo} site={site} />
+  <section class="shell" style="margin-top:var(--space-5)" aria-labelledby="recursos-titulo">
+    <div class="seccion-cabecera">
+      <h2 id="recursos-titulo">Recursos visibles</h2>
+      <span class="seccion-cabecera__conteo" id="conteo-tarjetas">
+        {recursos.length} {recursos.length === 1 ? 'recurso' : 'recursos'}
+      </span>
+    </div>
 
-  <div class="envoltorio" style="padding-block:1rem">
-    <p class="frescura">
-      Cada ficha indica cuándo se actualizó. Si el dato supera {site.umbral_desactualizado_horas}{' '}
-      horas, el sitio lo advierte en vez de mostrarlo como vigente.
+    <ul class="lista-tarjetas">
+      {recursos.map((recurso) => (
+        <TarjetaRecurso
+          recurso={recurso}
+          tipo={tipoDe(recurso)}
+          zonaNombre={zonaNombre(recurso.zona)}
+        />
+      ))}
+    </ul>
+
+    <p id="sin-tarjetas" class="frescura" hidden>
+      Ningún recurso coincide con la búsqueda.
     </p>
-  </div>
+  </section>
 </Base>

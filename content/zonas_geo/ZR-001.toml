@@ -1,6 +1,6 @@
 id = "ZR-001"
 tipo = "zona_riesgo"
-nombre = "[ejemplo] Zona de riesgo — Ladera norte"
+nombre = "Zona de riesgo — Ladera norte"
 descripcion = "Polígono preliminar del área con riesgo de avance del fuego."
 publicado = true
 ejemplo = true

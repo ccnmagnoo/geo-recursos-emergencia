@@ -4,8 +4,8 @@ import { fechaPublicacion, recursos, site, tipoDe, zonas } from '../lib/content'
 import { alertasVigentesDe, etiquetaEstado, ultimaActualizacion } from '../lib/recurso';
 import { formatearAbsoluta } from '../lib/tiempo';
 
-const zonaNombre = (id: string | undefined): string =>
-  id === undefined ? '—' : (zonas.find((zona) => zona.id === id)?.nombre ?? '—');
+const zonaNombre = (id: string | undefined): string | undefined =>
+  id === undefined ? undefined : zonas.find((zona) => zona.id === id)?.nombre;
 
 const filas = recursos.map((recurso) => ({
   recurso,
@@ -43,7 +43,7 @@ const filas = recursos.map((recurso) => ({
             <th scope="col">Tipo</th>
             <th scope="col">Estado</th>
             <th scope="col">Ubicación</th>
-            <th scope="col">Zona</th>
+
             <th scope="col">Coordenadas</th>
             <th scope="col">Actualizado</th>
           </tr>
@@ -66,8 +66,15 @@ const filas = recursos.map((recurso) => ({
               </th>
               <td>{tipo.etiqueta}</td>
               <td>{etiquetaEstado(recurso.estado_actual)}</td>
-              <td>{recurso.ubicacion_actual.nombre}</td>
-              <td>{zonaNombre(recurso.zona)}</td>
+              <td>
+                {recurso.ubicacion_actual.nombre}
+                {zonaNombre(recurso.zona) && (
+                  <div>
+                    <small>{zonaNombre(recurso.zona)}</small>
+                  </div>
+                )}
+              </td>
+
               <td>
                 {recurso.ubicacion_actual.lat.toFixed(5)}, {recurso.ubicacion_actual.lng.toFixed(5)}
               </td>

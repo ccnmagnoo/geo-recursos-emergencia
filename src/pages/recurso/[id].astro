@@ -11,7 +11,7 @@ import {
   ultimaActualizacion,
 } from '../../lib/recurso';
 import { derivarUbicaciones } from '../../lib/traslados';
-import { formatearAbsoluta } from '../../lib/tiempo';
+import { esDesactualizado, formatearAbsoluta } from '../../lib/tiempo';
 import { urlComoLlegar } from '../../lib/url';
 import type { RecursoT } from '../../lib/schema';
 
@@ -29,6 +29,7 @@ const zona = zonas.find((candidata) => candidata.id === recurso.zona);
 const derivado = derivarUbicaciones(recurso);
 const alertas = alertasVigentesDe(recurso);
 const actualizado = ultimaActualizacion(recurso);
+const vencido = esDesactualizado(actualizado, site.umbral_desactualizado_horas);
 const llegada = urlComoLlegar(
   recurso.ubicacion_actual.gmaps_url,
   recurso.ubicacion_actual.lat,
@@ -49,31 +50,48 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
 ---
 
 <Base titulo={titulo} descripcion={descripcion}>
-  <div class="envoltorio" style="padding-block:1rem;max-width:52rem">
-    <p class="no-imprimir" style="margin-bottom:.5rem">
+  <div class="shell pagina-ficha" style="max-width:52rem;padding-block:var(--space-5)">
+    <p class="no-imprimir" style="margin-bottom:var(--space-3)">
       <a href={conBase('/')}>← Volver al mapa</a>
     </p>
 
     <article>
       <header>
-        <p class="frescura" style="margin:0">
+        <p class="ficha__eyebrow">
           {tipo.etiqueta} · {recurso.id}
           {zona && <> · {zona.nombre}</>}
+          {recurso.ejemplo && <> · Ejemplo</>}
         </p>
-        <h1 style="margin-top:.25rem">{recurso.nombre}</h1>
-        <p style="margin:0 0 .5rem">{recurso.institucion}</p>
+        <h1 style="margin-top:var(--space-1)">{recurso.nombre}</h1>
+        <p class="ficha__institucion">{recurso.institucion}</p>
 
-        <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center">
+        <div class="ficha__cabecera" style="margin-top:var(--space-3)">
           <BadgeEstado estado={recurso.estado_actual} />
           <AvisoFrescura fecha={actualizado} />
         </div>
       </header>
 
-      {recurso.descripcion !== '' && <p style="margin-top:1rem">{recurso.descripcion}</p>}
+      {vencido && (
+        <div class="aviso aviso--critico" style="margin-top:var(--space-4)">
+          <p>
+            <strong>Información desactualizada</strong>
+          </p>
+          <p>
+            El último registro supera las {site.umbral_desactualizado_horas} horas. Confirma antes
+            de desplazarte.
+          </p>
+        </div>
+      )}
+
+      {recurso.descripcion !== '' && (
+        <p style="margin-top:var(--space-4);color:var(--ink-2)">{recurso.descripcion}</p>
+      )}
 
       {alertas.length > 0 && (
-        <section class="ficha__seccion" aria-labelledby="alertas-titulo">
-          <h2 id="alertas-titulo">Alertas vigentes</h2>
+        <section style="margin-top:var(--space-4)" aria-labelledby="alertas-titulo">
+          <h2 id="alertas-titulo" style="font-size:var(--text-base)">
+            Alertas vigentes
+          </h2>
           {alertas.map((alerta) => (
             <div
               class:list={[
@@ -81,7 +99,7 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
                 alerta.severidad === 'critica' && 'aviso--critico',
                 alerta.severidad === 'info' && 'aviso--info',
               ]}
-              style="margin-bottom:.5rem"
+              style="margin-bottom:var(--space-2)"
             >
               <p>
                 <strong>
@@ -94,7 +112,7 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
                 </strong>{' '}
                 {alerta.texto}
               </p>
-              <p class="frescura" style="margin:0">
+              <p class="frescura">
                 <time datetime={alerta.fecha}>{formatearAbsoluta(alerta.fecha)}</time>
               </p>
             </div>
@@ -102,10 +120,12 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
         </section>
       )}
 
-      <section class="ficha__seccion" aria-labelledby="ubicacion-titulo">
-        <h2 id="ubicacion-titulo">Ubicación actual</h2>
-        <p style="margin-bottom:.25rem">{recurso.ubicacion_actual.nombre}</p>
-        <p class="ficha__coordenadas" style="margin-bottom:.75rem">
+      <section class="tarjeta" style="margin-top:var(--space-4)" aria-labelledby="ubicacion-titulo">
+        <h2 id="ubicacion-titulo" style="font-size:var(--text-base)">
+          Ubicación
+        </h2>
+        <p style="margin-bottom:var(--space-1)">{recurso.ubicacion_actual.nombre}</p>
+        <p class="ficha__coordenadas" style="margin-bottom:var(--space-3)">
           {recurso.ubicacion_actual.lat.toFixed(5)}, {recurso.ubicacion_actual.lng.toFixed(5)}
         </p>
         <div class="ficha__acciones no-imprimir">
@@ -127,8 +147,10 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
         </div>
       </section>
 
-      <section class="ficha__seccion" aria-labelledby="traslados-titulo">
-        <h2 id="traslados-titulo">Traslados</h2>
+      <section style="margin-top:var(--space-5)" aria-labelledby="traslados-titulo">
+        <h2 id="traslados-titulo" style="font-size:var(--text-base)">
+          Traslados
+        </h2>
         <ul class="traslados">
           {derivado.anterior && (
             <li class="traslado">
@@ -181,106 +203,129 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
         </ul>
 
         {derivado.futura?.estado === 'proyectado' && (
-          <p class="aviso aviso--info" style="margin-top:.75rem">
-            Este traslado es una <strong>proyección</strong>: todavía no ocurrió y la fecha es una
-            estimación. La ubicación actual sigue siendo la indicada arriba.
+          <p class="aviso aviso--info" style="margin-top:var(--space-3)">
+            <strong>Proyección:</strong> la fecha es una estimación y la ubicación actual no cambia.
           </p>
         )}
       </section>
 
-      {detalles.length > 0 && (
-        <section class="ficha__seccion" aria-labelledby="detalles-titulo">
-          <h2 id="detalles-titulo">Datos del recurso</h2>
-          <dl class="detalles">
-            {detalles.map((detalle) => (
-              <>
-                <dt>{detalle.etiqueta}</dt>
-                <dd>
-                  {detalle.unidad === undefined
-                    ? detalle.valor
-                    : `${detalle.valor} ${detalle.unidad}`}
-                </dd>
-              </>
-            ))}
-          </dl>
-        </section>
-      )}
+      <div style="margin-top:var(--space-5)">
+        {detalles.length > 0 && (
+          <details class="acordeon">
+            <summary>
+              Datos del recurso
+              <span class="acordeon__conteo">{detalles.length}</span>
+            </summary>
+            <div class="acordeon__cuerpo">
+              <dl class="detalles">
+                {detalles.map((detalle) => (
+                  <>
+                    <dt>{detalle.etiqueta}</dt>
+                    <dd>
+                      {detalle.unidad === undefined
+                        ? detalle.valor
+                        : `${detalle.valor} ${detalle.unidad}`}
+                    </dd>
+                  </>
+                ))}
+              </dl>
+            </div>
+          </details>
+        )}
 
-      <section class="ficha__seccion" aria-labelledby="historial-titulo">
-        <h2 id="historial-titulo">Historial de estado</h2>
-        <ol class="linea-tiempo">
-          {historial.map((evento, indice) => {
-            const corregido = corregidas.has(`historial_estado:${evento.fecha}`);
-            return (
-              <li
-                class:list={[
-                  'linea-tiempo__evento',
-                  indice === 0 && 'linea-tiempo__evento--actual',
-                ]}
-              >
-                <strong class:list={[corregido && 'correccion']}>
-                  {etiquetaEstado(evento.estado)}
-                </strong>
-                {corregido && (
-                  <span class="correccion-nota">Este evento fue corregido más abajo.</span>
-                )}
-                <div class="linea-tiempo__fecha">
-                  <time datetime={evento.fecha}>{formatearAbsoluta(evento.fecha)}</time> ·{' '}
-                  {evento.autor}
+        <details class="acordeon">
+          <summary>
+            Historial de estado
+            <span class="acordeon__conteo">{historial.length}</span>
+          </summary>
+          <div class="acordeon__cuerpo">
+            <ol class="linea-tiempo">
+              {historial.map((evento, indice) => {
+                const corregido = corregidas.has(`historial_estado:${evento.fecha}`);
+                return (
+                  <li
+                    class:list={[
+                      'linea-tiempo__evento',
+                      indice === 0 && 'linea-tiempo__evento--actual',
+                    ]}
+                  >
+                    <strong class:list={[corregido && 'correccion']}>
+                      {etiquetaEstado(evento.estado)}
+                    </strong>
+                    {corregido && (
+                      <span class="correccion-nota">Este evento fue corregido más abajo.</span>
+                    )}
+                    <div class="linea-tiempo__fecha">
+                      <time datetime={evento.fecha}>{formatearAbsoluta(evento.fecha)}</time> ·{' '}
+                      {evento.autor}
+                    </div>
+                    {evento.nota && <p class="linea-tiempo__nota">{evento.nota}</p>}
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        </details>
+
+        {observaciones.length > 0 && (
+          <details class="acordeon">
+            <summary>
+              Observaciones
+              <span class="acordeon__conteo">{observaciones.length}</span>
+            </summary>
+            <div class="acordeon__cuerpo">
+              {observaciones.map((observacion) => (
+                <div style="margin-bottom:var(--space-3)">
+                  <p
+                    style="margin-bottom:var(--space-1)"
+                    class:list={[
+                      corregidas.has(`observaciones:${observacion.fecha}`) && 'correccion',
+                    ]}
+                  >
+                    {observacion.texto}
+                  </p>
+                  <p class="frescura" style="margin:0">
+                    <time datetime={observacion.fecha}>{formatearAbsoluta(observacion.fecha)}</time>{' '}
+                    · {observacion.autor}
+                  </p>
                 </div>
-                {evento.nota && <p class="linea-tiempo__nota">{evento.nota}</p>}
-              </li>
-            );
-          })}
-        </ol>
-      </section>
-
-      {observaciones.length > 0 && (
-        <section class="ficha__seccion" aria-labelledby="observaciones-titulo">
-          <h2 id="observaciones-titulo">Observaciones</h2>
-          {observaciones.map((observacion) => (
-            <div style="margin-bottom:.75rem">
-              <p
-                style="margin-bottom:.15rem"
-                class:list={[corregidas.has(`observaciones:${observacion.fecha}`) && 'correccion']}
-              >
-                {observacion.texto}
-              </p>
-              <p class="frescura" style="margin:0">
-                <time datetime={observacion.fecha}>{formatearAbsoluta(observacion.fecha)}</time> ·{' '}
-                {observacion.autor}
-              </p>
+              ))}
             </div>
-          ))}
-        </section>
-      )}
+          </details>
+        )}
 
-      {recurso.correcciones.length > 0 && (
-        <section class="ficha__seccion" aria-labelledby="correcciones-titulo">
-          <h2 id="correcciones-titulo">Correcciones</h2>
-          <p class="frescura">
-            El historial no se borra: estas notas explican qué se corrigió y por qué.
-          </p>
-          {recurso.correcciones.map((correccion) => (
-            <div style="margin-bottom:.75rem">
-              <p style="margin-bottom:.15rem">{correccion.nota}</p>
-              <p class="frescura" style="margin:0">
-                Corrige <code>{correccion.corrige}</code> ·{' '}
-                <time datetime={correccion.fecha}>{formatearAbsoluta(correccion.fecha)}</time> ·{' '}
-                {correccion.autor}
+        {recurso.correcciones.length > 0 && (
+          <details class="acordeon">
+            <summary>
+              Correcciones
+              <span class="acordeon__conteo">{recurso.correcciones.length}</span>
+            </summary>
+            <div class="acordeon__cuerpo">
+              <p class="frescura" style="margin-bottom:var(--space-3)">
+                El historial no se borra: estas notas explican qué se corrigió.
               </p>
+              {recurso.correcciones.map((correccion) => (
+                <div style="margin-bottom:var(--space-3)">
+                  <p style="margin-bottom:var(--space-1)">{correccion.nota}</p>
+                  <p class="frescura" style="margin:0">
+                    Corrige <code>{correccion.corrige}</code> ·{' '}
+                    <time datetime={correccion.fecha}>{formatearAbsoluta(correccion.fecha)}</time> ·{' '}
+                    {correccion.autor}
+                  </p>
+                </div>
+              ))}
             </div>
-          ))}
-        </section>
-      )}
+          </details>
+        )}
+      </div>
     </article>
 
     <nav
       class="no-imprimir"
-      style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:.5rem"
+      style="margin-top:var(--space-5);display:flex;flex-wrap:wrap;gap:var(--space-2)"
       aria-label="Otras vistas"
     >
-      <a class="boton boton--secundario" href={conBase('/')}>
+      <a class="boton boton--secundario" href={`${conBase('/')}?recurso=${recurso.id}`}>
         Ver en el mapa
       </a>
       <a class="boton boton--secundario" href={conBase('/lista')}>
@@ -288,7 +333,7 @@ const descripcion = `${tipo.etiqueta} en ${recurso.ubicacion_actual.nombre}. ${e
       </a>
     </nav>
 
-    <p class="frescura" style="margin-top:1.5rem">
+    <p class="frescura" style="margin-top:var(--space-5)">
       Responsable: {recurso.institucion}. Si detectas un error, contacta a {site.contacto}.
     </p>
   </div>

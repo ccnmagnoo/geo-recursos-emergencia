@@ -1,6 +1,6 @@
 id = "REQ-001"
 tipo_recurso = "bano_quimico"
-nombre = "[ejemplo] Faltan baños químicos en El Mirador"
+nombre = "Faltan baños químicos en El Mirador"
 cantidad = 4
 prioridad = "alta"
 estado = "asignado"
